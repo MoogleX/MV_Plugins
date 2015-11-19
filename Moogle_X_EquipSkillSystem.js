@@ -481,7 +481,7 @@ Game_Actor.prototype.skills = function() {
         return id !== 0;
     });
 
-    list.concat(this.addedSkills());
+    list = list.concat(this.addedSkills());
 
     var list2 = [];
     list.forEach(function(id) {
