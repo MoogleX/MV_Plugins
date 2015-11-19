@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.2 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Slots
@@ -245,23 +245,23 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 // Parameter Variables
 //=============================================================================
 
-var parameters = PluginManager.parameters('Moogle_X_EquipSkillSystem');
-var defMaxSlots = Number(parameters['Default Max Slots'] || 5);
-var defMaxLimit = Number(parameters['Default Max Limit'] || 10);
-var defEquipCost = Number(parameters['Default Equip Cost'] || 0);
-var eqsVocab = String(parameters['Equip Skill Command Name'] || 'Equip');
-var emptyText = String(parameters['Empty Slot Text'] || '');
-var emptyIcon = Number(parameters['Empty Icon Index'] || 0);
-var removeText = String(parameters['Remove Slot Text'] || '');
-var removeIcon = Number(parameters['Remove Icon Index'] || 0);
-var limitText = String(parameters['Equip Limit Text'] || '');
-var limitColor = Number(parameters['Equip Limit Text Color'] || 0);
-var limitNumberColor = Number(parameters['Equip Limit Number Color'] || 0);
-var poolText = String(parameters['Skill Pool Text'] || '');
-var poolColor = Number(parameters['Skill Pool Text Color'] || 0);
-var eqsCostText = String(parameters['Equip Cost Text'] || '');
-var eqsCostColor = Number(parameters['Equip Cost Text Color'] || 0);
-var eqsCostNumberColor = Number(parameters['Equip Cost Number Color'] || 0);
+Moogle_X.EQS.parameters = PluginManager.parameters('Moogle_X_EquipSkillSystem');
+Moogle_X.EQS.defMaxSlots = Number(Moogle_X.EQS.parameters['Default Max Slots'] || 5);
+Moogle_X.EQS.defMaxLimit = Number(Moogle_X.EQS.parameters['Default Max Limit'] || 10);
+Moogle_X.EQS.defEquipCost = Number(Moogle_X.EQS.parameters['Default Equip Cost'] || 0);
+Moogle_X.EQS.eqsVocab = String(Moogle_X.EQS.parameters['Equip Skill Command Name'] || 'Equip');
+Moogle_X.EQS.emptyText = String(Moogle_X.EQS.parameters['Empty Slot Text'] || '');
+Moogle_X.EQS.emptyIcon = Number(Moogle_X.EQS.parameters['Empty Icon Index'] || 0);
+Moogle_X.EQS.removeText = String(Moogle_X.EQS.parameters['Remove Slot Text'] || '');
+Moogle_X.EQS.removeIcon = Number(Moogle_X.EQS.parameters['Remove Icon Index'] || 0);
+Moogle_X.EQS.limitText = String(Moogle_X.EQS.parameters['Equip Limit Text'] || '');
+Moogle_X.EQS.limitColor = Number(Moogle_X.EQS.parameters['Equip Limit Text Color'] || 0);
+Moogle_X.EQS.limitNumberColor = Number(Moogle_X.EQS.parameters['Equip Limit Number Color'] || 0);
+Moogle_X.EQS.poolText = String(Moogle_X.EQS.parameters['Skill Pool Text'] || '');
+Moogle_X.EQS.poolColor = Number(Moogle_X.EQS.parameters['Skill Pool Text Color'] || 0);
+Moogle_X.EQS.eqsCostText = String(Moogle_X.EQS.parameters['Equip Cost Text'] || '');
+Moogle_X.EQS.eqsCostColor = Number(Moogle_X.EQS.parameters['Equip Cost Text Color'] || 0);
+Moogle_X.EQS.eqsCostNumberColor = Number(Moogle_X.EQS.parameters['Equip Cost Number Color'] || 0);
 
 //=============================================================================
 // Constant Declaration
@@ -304,8 +304,8 @@ DataManager.readNotetags_EQS1 = function(group) {
     // Initialize both max slots and max limit with default value.
     var maxLevel = obj.maxLevel;
     for (var z = 1; z <= maxLevel; z++) {
-      obj.eqsMaxSlots[z] = defMaxSlots;
-      obj.eqsMaxLimit[z] = defMaxLimit;
+      obj.eqsMaxSlots[z] = Moogle_X.EQS.defMaxSlots;
+      obj.eqsMaxLimit[z] = Moogle_X.EQS.defMaxLimit;
     }
 
 		for (var i = 0; i < notedata.length; i++) {
@@ -375,7 +375,7 @@ DataManager.readNotetags_EQS3 = function(group) {
 		var obj = group[n];
 		var notedata = obj.note.split(/[\r\n]+/);
 
-    obj.eqsCost = defEquipCost;
+    obj.eqsCost = Moogle_X.EQS.defEquipCost;
 
 		for (var i = 0; i < notedata.length; i++) {
 			var line = notedata[i];
@@ -795,7 +795,7 @@ Moogle_X.EQS.Window_SkillType_makeCommandList =
     Window_SkillType.prototype.makeCommandList;
 Window_SkillType.prototype.makeCommandList = function() {
     Moogle_X.EQS.Window_SkillType_makeCommandList.call(this);
-    this.addCommand(eqsVocab, 'eqsEquip', true);
+    this.addCommand(Moogle_X.EQS.eqsVocab, 'eqsEquip', true);
 };
 
 Window_SkillType.prototype.setEqsLimitWindow = function(eqsWindow) {
@@ -840,6 +840,8 @@ Window_SkillType.prototype.updateEqsShowHide = function() {
         this._eqsCostWindow.hide();
     }
 };
+
+})(); // IIFE
 
 //=============================================================================
 // Window_EquipSkillSlot
@@ -892,8 +894,8 @@ Window_EquipSkillSlot.prototype.drawEmptySlot = function(x, y, width) {
     this.changePaintOpacity(false);
     var iconWidth = Window_Base._iconWidth + 4;
     this.resetTextColor();
-    this.drawIcon(emptyIcon, x + 2, y + 2);
-    this.drawText(emptyText, x + iconWidth, y, width - iconWidth);
+    this.drawIcon(Moogle_X.EQS.emptyIcon, x + 2, y + 2);
+    this.drawText(Moogle_X.EQS.emptyText, x + iconWidth, y, width - iconWidth);
 };
 
 Window_EquipSkillSlot.prototype.setStatusWindow = function(statusWindow) {
@@ -992,8 +994,8 @@ Window_EquipSkillPool.prototype.drawEmptySlot = function(x, y, width) {
     this.changePaintOpacity(false);
     var iconWidth = Window_Base._iconWidth + 4;
     this.resetTextColor();
-    this.drawIcon(removeIcon, x + 2, y + 2);
-    this.drawText(removeText, x + iconWidth, y, width - iconWidth);
+    this.drawIcon(Moogle_X.EQS.removeIcon, x + 2, y + 2);
+    this.drawText(Moogle_X.EQS.removeText, x + iconWidth, y, width - iconWidth);
 };
 
 Window_EquipSkillPool.prototype.costWidth = function() {
@@ -1001,7 +1003,7 @@ Window_EquipSkillPool.prototype.costWidth = function() {
 };
 
 Window_EquipSkillPool.prototype.drawEquipCost = function(skill, x, y, width) {
-    this.changeTextColor(this.textColor(eqsCostNumberColor));
+    this.changeTextColor(this.textColor(Moogle_X.EQS.eqsCostNumberColor));
     if (skill.eqsCost > 0) {
         this.drawText(skill.eqsCost, x, y, width, 'right');
     }
@@ -1053,10 +1055,10 @@ Window_EqsLimit.prototype.drawCurrentEqsLimit = function() {
     if (this._actor) {
         var rect = this.itemRectForText(0);
         var wx = rect.width / 2;
-        this.changeTextColor(this.textColor(limitColor));
+        this.changeTextColor(this.textColor(Moogle_X.EQS.limitColor));
         this.changePaintOpacity(true);
-        this.drawText(limitText, rect.x, rect.y, rect.width);
-        this.changeTextColor(this.textColor(limitNumberColor))
+        this.drawText(Moogle_X.EQS.limitText, rect.x, rect.y, rect.width);
+        this.changeTextColor(this.textColor(Moogle_X.EQS.limitNumberColor))
         var text = this._actor.currentEqsLimit() + "/" + this._actor._eqsMaxLimit;
         this.drawText(text, wx, rect.y, rect.width - wx, 'right');
     }
@@ -1098,13 +1100,15 @@ Window_EqsCost.prototype.drawEqsCostText = function() {
     if (this._actor) {
         var rect = this.itemRectForText(0);
         var wx = rect.width / 2;
-        this.changeTextColor(this.textColor(poolColor));
+        this.changeTextColor(this.textColor(Moogle_X.EQS.poolColor));
         this.changePaintOpacity(true);
-        this.drawText(poolText, rect.x, rect.y, rect.width);
-        this.changeTextColor(this.textColor(eqsCostColor));
-        this.drawText(eqsCostText, wx, rect.y, rect.width - wx, 'right');
+        this.drawText(Moogle_X.EQS.poolText, rect.x, rect.y, rect.width);
+        this.changeTextColor(this.textColor(Moogle_X.EQS.eqsCostColor));
+        this.drawText(Moogle_X.EQS.eqsCostText, wx, rect.y, rect.width - wx, 'right');
     }
 };
+
+(function() { // IIFE
 
 //=============================================================================
 // Game_Interpreter
