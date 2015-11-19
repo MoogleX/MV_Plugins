@@ -12,7 +12,7 @@ Moogle_X.EQS_JP = Moogle_X.EQS_JP || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0 Replace Equip Limit with Job Points.
+ * @plugindesc v1.1 Replace Equip Limit with Job Points.
  * @author Moogle_X
  *
  * @help
@@ -83,6 +83,67 @@ Game_Action.prototype.canGrowEqs = function(target) {
 
 Game_Action.prototype.applyEqsLimitGrow = function(target) {
     // Empty.
+};
+
+//=============================================================================
+// Window_EquipSkillPool
+//=============================================================================
+
+Window_EquipSkillPool.prototype.drawEquipCost = function(skill, x, y, width) {
+    if (skill.eqsCost > 0) {
+        this.drawEquipJpCost(skill, x, y, width, 'right');
+    }
+};
+
+Window_EquipSkillPool.prototype.drawEquipJpCost = function(skill, wx, wy, ww, align) {
+    var jp = skill.eqsCost;
+    var icon = '\\i[' + Yanfly.Icon.Jp + ']';
+    var fmt = Yanfly.Param.JpMenuFormat;
+    var text = fmt.format(Yanfly.Util.toGroup(jp), Yanfly.Param.Jp, icon);
+    if (align === 'left') {
+      wx = 0;
+    } else if (align === 'center') {
+      wx += (ww - this.textWidthEx(text)) / 2;
+    } else {
+      wx += ww - this.textWidthEx(text);
+    }
+    this.drawTextEx(text, wx, wy);
+};
+
+//=============================================================================
+// Window_EqsLimit
+//=============================================================================
+
+Window_EqsLimit.prototype.drawCurrentEqsLimit = function() {
+    if (this._actor) {
+        var rect = this.itemRectForText(0);
+        var wx = rect.width / 2;
+        this.changeTextColor(this.textColor(Moogle_X.EQS.limitColor));
+        this.changePaintOpacity(true);
+        this.drawText(Moogle_X.EQS.limitText, rect.x, rect.y, rect.width);
+        //this.changeTextColor(this.textColor(Moogle_X.EQS.limitNumberColor))
+        //var text = this._actor.currentEqsLimit() + "/" + this._actor._eqsMaxLimit;
+        //this.drawText(text, wx, rect.y, rect.width - wx, 'right');
+        this.drawCurrentJpLimit(wx, rect.y, rect.width - wx, 'right')
+
+    }
+};
+
+Window_EqsLimit.prototype.drawCurrentJpLimit = function(wx, wy, ww, align) {
+    var jp1 = this._actor.currentEqsLimit();
+    var jp2 = this._actor._eqsMaxLimit;
+    var jp = jp1 + "/" + jp2;
+    var icon = '\\i[' + Yanfly.Icon.Jp + ']';
+    var fmt = Yanfly.Param.JpMenuFormat;
+    var text = fmt.format(Yanfly.Util.toGroup(jp), Yanfly.Param.Jp, icon);
+    if (align === 'left') {
+      wx = 0;
+    } else if (align === 'center') {
+      wx += (ww - this.textWidthEx(text)) / 2;
+    } else {
+      wx += ww - this.textWidthEx(text);
+    }
+    this.drawTextEx(text, wx, wy);
 };
 
 
