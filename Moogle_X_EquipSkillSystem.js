@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.1 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Slots
@@ -508,6 +508,7 @@ Game_Actor.prototype.equipSkill = function(skill, slotId) {
             this._eqsSlots[slotId] = skill.id;
         }
     }
+    this.refresh();
 };
 
 Game_Actor.prototype.canEquipSkill = function(skill) {
