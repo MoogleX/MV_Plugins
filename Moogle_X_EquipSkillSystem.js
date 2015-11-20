@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.2 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.3 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Slots
@@ -231,6 +231,23 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * EQS Actor 4 Limit Grow 5
  *
  * ============================================================================
+ * NEW Notetag! <EQS Ignore>
+ * ============================================================================
+ * By putting this notetag inside skill's notebox, you can make that skill
+ * to be "immune" to the "must be equip first" rule of this plugin.
+ * That skill can be used immediately after it is learned without the need to
+ * equip it.
+ * Also, you will not see that skill show up in Skill Pool window.
+ *
+ * ============================================================================
+ * Compatibility
+ * ============================================================================
+ * If you use YEP_SkillLearnSystem plugin, position this plugin below it.
+ * If you use Moogle_X_EquipSkillSystem_JpAddOn plugin, position this plugin
+ * above it.
+ * If you use Moogle_X_PassiveSkill plugin, position this plugin above it.
+ *
+ * ============================================================================
  * Terms of Use
  * ============================================================================
  * Free to use in both commercial and non-commercial project as long as credit
@@ -369,19 +386,23 @@ DataManager.readNotetags_EQS2 = function(group) {
 };
 
 DataManager.readNotetags_EQS3 = function(group) {
-	var note = /<(?:EQS COST):[ ](\d+)>/i;
+	var note1 = /<(?:EQS COST):[ ](\d+)>/i;
+  var note2 = /<(?:EQS IGNORE)>/i;
 
 	for (var n = 1; n < group.length; n++) {
 		var obj = group[n];
 		var notedata = obj.note.split(/[\r\n]+/);
 
     obj.eqsCost = Moogle_X.EQS.defEquipCost;
+    obj.isEqsIgnore = false;
 
 		for (var i = 0; i < notedata.length; i++) {
 			var line = notedata[i];
-			if (line.match(note)) {
+			if (line.match(note1)) {
         var cost = Number(RegExp.$1);
         obj.eqsCost = cost;
+      } else if (line.match(note2)) {
+        obj.isEqsIgnore = true;
       }
 		}
 	}
@@ -489,14 +510,24 @@ Game_Actor.prototype.skills = function() {
             list2.push($dataSkills[id]);
         }
     });
+
+    this._skills.forEach(function(id) {
+        if (!list2.contains($dataSkills[id]) && $dataSkills[id].isEqsIgnore) {
+            list2.push($dataSkills[id]);
+        }
+    });
     return list2;
 };
 
 Game_Actor.prototype.getSkillPool = function() {
     var array = this._skills;
-    return array.map(function(skillId) {
+    array = array.map(function(skillId) {
         return $dataSkills[skillId];
     });
+    array = array.filter(function(skill) {
+        return skill.isEqsIgnore === false;
+    });
+    return array;
 };
 
 Game_Actor.prototype.equipSkill = function(skill, slotId) {
@@ -786,6 +817,16 @@ Scene_Skill.prototype.onEqsItemCancel = function() {
     this._eqsSlotWindow.activate();
     this._eqsPoolWindow.deselect();
 };
+
+// Compatibility fpr YEP_SkillLearnSystem. Simply refresh the skill pool window
+// after learning new skill.
+if (Imported.YEP_SkillLearnSystem) {
+  Moogle_X.EQS.Scene_Skill_onLearnOk = Scene_Skill.prototype.onLearnOk;
+  Scene_Skill.prototype.onLearnOk = function() {
+    Moogle_X.EQS.Scene_Skill_onLearnOk.call(this);
+    this._eqsPoolWindow.refresh();
+  };
+}
 
 //=============================================================================
 // Window_SkillType
