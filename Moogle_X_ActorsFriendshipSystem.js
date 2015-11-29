@@ -12,7 +12,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v2.0 Adds friendship mechanic between actors.
+ * @plugindesc v2.01 Adds friendship mechanic between actors.
  * @author Moogle_X
  *
  * @param Default All Leaders
@@ -725,8 +725,11 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * is given.
  *
  * ============================================================================
- * Change log
+ * Change Log
  * ============================================================================
+ * Version 2.01:
+ * - Fixed a game breaking bug when using Skill or Item with FP gain effect.
+ *
  * Version 2.0:
  * - A complete rewritten of the plugin. Introduced multiple leaders feature.
  *   Ton of new features added.
@@ -1372,7 +1375,7 @@ Game_Action.prototype.preApplyAfsGain = function(target) {
 
     // In battle scenario...
     if ($gameParty.inBattle()) {
-            this.applyAfsGain(target);
+        this.applyAfsGain(target);
 
     // On map scenario...
     } else {
@@ -1392,9 +1395,9 @@ Game_Action.prototype.applyAfsGain = function(target) {
     if (target.isActor()) {
         var fp = this.getAfsValue(target);
         if (fp > 0) {
-            target.gainAfs(fp, this.subject().actorId);
+            target.gainAfs(fp, this.subject().actorId());
         } else if (fp < 0) {
-            target.loseAfs(fp * -1, this.subject().actorId);
+            target.loseAfs(fp * -1, this.subject().actorId());
         }
     }
 };
@@ -1409,7 +1412,7 @@ Game_Party.prototype.getBattleAfsLeaders = function() {
         if (actor.isAfsLeader()) {
             array.push(actor);
         }
-    })
+    });
     return array;
 };
 
