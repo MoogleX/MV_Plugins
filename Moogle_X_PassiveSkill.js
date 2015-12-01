@@ -12,7 +12,7 @@ Moogle_X.PsvSkl = Moogle_X.PsvSkl || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0 Adds passive skills functionality to actors.
+ * @plugindesc v1.1 Adds passive skills functionality to actors.
  * @author Moogle_X
  *
  * @param Default Hide in Battle
@@ -100,12 +100,22 @@ Moogle_X.PsvSkl = Moogle_X.PsvSkl || {};
  * Compatibility
  * ============================================================================
  * If you use Moogle_X_EquipSkillSystem plugin, position this plugin below it.
+ * If you use YEP_ClassChangeCore, position this plugin below it.
  *
  * ============================================================================
  * Terms of Use
  * ============================================================================
  * Free to use in both commercial and non-commercial project as long as credit
  * is given.
+ *
+ * ============================================================================
+ * Change Log
+ * ============================================================================
+ * Version 1.1:
+ * - Added compatibility patch with YEP_ClassChangeCore.
+ *
+ * Version 1.0:
+ * - Completed plugin.
  *
  */
 //=============================================================================
@@ -278,6 +288,25 @@ Game_Actor.prototype.forgetSkill = function(skillId) {
     Moogle_X.PsvSkl.Game_Actor_forgetSkill.call(this, skillId);
     this.refresh();
 };
+
+// Compatibility for YEP_ClassChangeCore. Prevent refresh loop.
+if (Imported.YEP_ClassChangeCore) {
+    Game_Actor.prototype.updateLearnedSkills = function(classId) {
+        $dataClasses[classId].learnings.forEach(function(learning) {
+            if (this.classLevel(classId) >= learning.level) {
+                //this.learnSkill(learning.skillId);
+
+                if (!this.isLearnedSkill(learning.skillId)) {
+                    this._skills.push(learning.skillId);
+                    this._skills.sort(function(a, b) {
+                        return a - b;
+                    });
+                    Game_Battler.prototype.refresh.call(this);
+                }
+            }
+        }, this);
+    };
+}
 
 //=============================================================================
 // Window_BattleSkill
