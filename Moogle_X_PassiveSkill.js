@@ -12,7 +12,7 @@ Moogle_X.PsvSkl = Moogle_X.PsvSkl || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1 Adds passive skills functionality to actors.
+ * @plugindesc v1.12 Adds passive skills functionality to actors.
  * @author Moogle_X
  *
  * @param Default Hide in Battle
@@ -111,6 +111,9 @@ Moogle_X.PsvSkl = Moogle_X.PsvSkl || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.12:
+ * - Added compatibility patch with YEP_ClassChangeCore v1.02.
+ *
  * Version 1.1:
  * - Added compatibility patch with YEP_ClassChangeCore.
  *
@@ -292,6 +295,7 @@ Game_Actor.prototype.forgetSkill = function(skillId) {
 // Compatibility for YEP_ClassChangeCore. Prevent refresh loop.
 if (Imported.YEP_ClassChangeCore) {
     Game_Actor.prototype.updateLearnedSkills = function(classId) {
+        if (!$dataClasses[classId]) return;
         $dataClasses[classId].learnings.forEach(function(learning) {
             if (this.classLevel(classId) >= learning.level) {
                 //this.learnSkill(learning.skillId);
