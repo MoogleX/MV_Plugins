@@ -31,7 +31,7 @@ Moogle_X.SickState = Moogle_X.SickState || {};
  * ============================================================================
  * Introduction
  * ============================================================================
- * This is a special plugin request from lliketea.
+ * This is a special plugin request from Iliketea.
  *
  * First, you need to add this notetag for any items/foods/potions in your item
  * database.
