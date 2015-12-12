@@ -12,12 +12,8 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.3 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.4 Adds equip skill system mechanic to actors.
  * @author Moogle_X
- *
- * @param Default Max Slots
- * @desc This is the default max skill equip slots for all actors.
- * @default 5
  *
  * @param Default Max Limit
  * @desc This is the default max skill equip limit for all actors.
@@ -91,6 +87,343 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * @desc This is the number color for skill equip cost.
  * @default 17
  *
+ * @param ---Slot Types---
+ * @default
+ *
+ * @param Slot Type Name Rectangle Width
+ * @desc This is the rectangle width for slot type name.
+ * @default 120
+ *
+ * @param ---Slot Type 1---
+ * @default
+ *
+ * @param Slot Type 1 Name
+ * @desc This is the name for Slot Type 1.
+ * @default Type 1
+ *
+ * @param Slot Type 1 Color
+ * @desc This is the color for Slot Type 1 name.
+ * @default 16
+ *
+ * @param ---Slot Type 2---
+ * @default
+ *
+ * @param Slot Type 2 Name
+ * @desc This is the name for Slot Type 2.
+ * @default Type 2
+ *
+ * @param Slot Type 2 Color
+ * @desc This is the color for Slot Type 2 name.
+ * @default 16
+ *
+ * @param ---Slot Type 3---
+ * @default
+ *
+ * @param Slot Type 3 Name
+ * @desc This is the name for Slot Type 3.
+ * @default Type 3
+ *
+ * @param Slot Type 3 Color
+ * @desc This is the color for Slot Type 3 name.
+ * @default 16
+ *
+ * @param ---Slot Type 4---
+ * @default
+ *
+ * @param Slot Type 4 Name
+ * @desc This is the name for Slot Type 4.
+ * @default Type 4
+ *
+ * @param Slot Type 4 Color
+ * @desc This is the color for Slot Type 4 name.
+ * @default 16
+ *
+ * @param ---Slot Type 5---
+ * @default
+ *
+ * @param Slot Type 5 Name
+ * @desc This is the name for Slot Type 5.
+ * @default Type 5
+ *
+ * @param Slot Type 5 Color
+ * @desc This is the color for Slot Type 5 name.
+ * @default 16
+ *
+ * @param ---Slot Type 6---
+ * @default
+ *
+ * @param Slot Type 6 Name
+ * @desc This is the name for Slot Type 6.
+ * @default Type 6
+ *
+ * @param Slot Type 6 Color
+ * @desc This is the color for Slot Type 6 name.
+ * @default 16
+ *
+ * @param ---Slot Type 7---
+ * @default
+ *
+ * @param Slot Type 7 Name
+ * @desc This is the name for Slot Type 7.
+ * @default Type 7
+ *
+ * @param Slot Type 7 Color
+ * @desc This is the color for Slot Type 7 name.
+ * @default 16
+ *
+ * @param ---Slot Type 8---
+ * @default
+ *
+ * @param Slot Type 8 Name
+ * @desc This is the name for Slot Type 8.
+ * @default Type 8
+ *
+ * @param Slot Type 8 Color
+ * @desc This is the color for Slot Type 8 name.
+ * @default 16
+ *
+ * @param ---Slot Type 9---
+ * @default
+ *
+ * @param Slot Type 9 Name
+ * @desc This is the name for Slot Type 9.
+ * @default Type 9
+ *
+ * @param Slot Type 9 Color
+ * @desc This is the color for Slot Type 9 name.
+ * @default 16
+ *
+ * @param ---Slot Type 10---
+ * @default
+ *
+ * @param Slot Type 10 Name
+ * @desc This is the name for Slot Type 10.
+ * @default Type 10
+ *
+ * @param Slot Type 10 Color
+ * @desc This is the color for Slot Type 10 name.
+ * @default 16
+ *
+ * @param ---Slot Type 11---
+ * @default
+ *
+ * @param Slot Type 11 Name
+ * @desc This is the name for Slot Type 11.
+ * @default Type 11
+ *
+ * @param Slot Type 11 Color
+ * @desc This is the color for Slot Type 11 name.
+ * @default 16
+ *
+ * @param ---Slot Type 12---
+ * @default
+ *
+ * @param Slot Type 12 Name
+ * @desc This is the name for Slot Type 12.
+ * @default Type 12
+ *
+ * @param Slot Type 12 Color
+ * @desc This is the color for Slot Type 12 name.
+ * @default 16
+ *
+ * @param ---Slot Type 13---
+ * @default
+ *
+ * @param Slot Type 13 Name
+ * @desc This is the name for Slot Type 13.
+ * @default Type 13
+ *
+ * @param Slot Type 13 Color
+ * @desc This is the color for Slot Type 13 name.
+ * @default 16
+ *
+ * @param ---Slot Type 14---
+ * @default
+ *
+ * @param Slot Type 14 Name
+ * @desc This is the name for Slot Type 14.
+ * @default Type 14
+ *
+ * @param Slot Type 14 Color
+ * @desc This is the color for Slot Type 14 name.
+ * @default 16
+ *
+ * @param ---Slot Type 15---
+ * @default
+ *
+ * @param Slot Type 15 Name
+ * @desc This is the name for Slot Type 15.
+ * @default Type 15
+ *
+ * @param Slot Type 15 Color
+ * @desc This is the color for Slot Type 15 name.
+ * @default 16
+ *
+ * @param ---Slot Type 16---
+ * @default
+ *
+ * @param Slot Type 16 Name
+ * @desc This is the name for Slot Type 16.
+ * @default Type 16
+ *
+ * @param Slot Type 16 Color
+ * @desc This is the color for Slot Type 16 name.
+ * @default 16
+ *
+ * @param ---Slot Type 17---
+ * @default
+ *
+ * @param Slot Type 17 Name
+ * @desc This is the name for Slot Type 17.
+ * @default Type 17
+ *
+ * @param Slot Type 17 Color
+ * @desc This is the color for Slot Type 17 name.
+ * @default 16
+ *
+ * @param ---Slot Type 18---
+ * @default
+ *
+ * @param Slot Type 18 Name
+ * @desc This is the name for Slot Type 18.
+ * @default Type 18
+ *
+ * @param Slot Type 18 Color
+ * @desc This is the color for Slot Type 18 name.
+ * @default 16
+ *
+ * @param ---Slot Type 19---
+ * @default
+ *
+ * @param Slot Type 19 Name
+ * @desc This is the name for Slot Type 19.
+ * @default Type 19
+ *
+ * @param Slot Type 19 Color
+ * @desc This is the color for Slot Type 19 name.
+ * @default 16
+ *
+ * @param ---Slot Type 20---
+ * @default
+ *
+ * @param Slot Type 20 Name
+ * @desc This is the name for Slot Type 20.
+ * @default Type 20
+ *
+ * @param Slot Type 20 Color
+ * @desc This is the color for Slot Type 20 name.
+ * @default 16
+ *
+ * @param ---Slot Type 21---
+ * @default
+ *
+ * @param Slot Type 21 Name
+ * @desc This is the name for Slot Type 21.
+ * @default Type 21
+ *
+ * @param Slot Type 21 Color
+ * @desc This is the color for Slot Type 21 name.
+ * @default 16
+ *
+ * @param ---Slot Type 22---
+ * @default
+ *
+ * @param Slot Type 22 Name
+ * @desc This is the name for Slot Type 22.
+ * @default Type 22
+ *
+ * @param Slot Type 22 Color
+ * @desc This is the color for Slot Type 22 name.
+ * @default 16
+ *
+ * @param ---Slot Type 23---
+ * @default
+ *
+ * @param Slot Type 23 Name
+ * @desc This is the name for Slot Type 23.
+ * @default Type 23
+ *
+ * @param Slot Type 23 Color
+ * @desc This is the color for Slot Type 23 name.
+ * @default 16
+ *
+ * @param ---Slot Type 24---
+ * @default
+ *
+ * @param Slot Type 24 Name
+ * @desc This is the name for Slot Type 24.
+ * @default Type 24
+ *
+ * @param Slot Type 24 Color
+ * @desc This is the color for Slot Type 24 name.
+ * @default 16
+ *
+ * @param ---Slot Type 25---
+ * @default
+ *
+ * @param Slot Type 25 Name
+ * @desc This is the name for Slot Type 25.
+ * @default Type 25
+ *
+ * @param Slot Type 25 Color
+ * @desc This is the color for Slot Type 25 name.
+ * @default 16
+ *
+ * @param ---Slot Type 26---
+ * @default
+ *
+ * @param Slot Type 26 Name
+ * @desc This is the name for Slot Type 26.
+ * @default Type 26
+ *
+ * @param Slot Type 26 Color
+ * @desc This is the color for Slot Type 26 name.
+ * @default 16
+ *
+ * @param ---Slot Type 27---
+ * @default
+ *
+ * @param Slot Type 27 Name
+ * @desc This is the name for Slot Type 27.
+ * @default Type 27
+ *
+ * @param Slot Type 27 Color
+ * @desc This is the color for Slot Type 27 name.
+ * @default 16
+ *
+ * @param ---Slot Type 28---
+ * @default
+ *
+ * @param Slot Type 28 Name
+ * @desc This is the name for Slot Type 28.
+ * @default Type 28
+ *
+ * @param Slot Type 28 Color
+ * @desc This is the color for Slot Type 28 name.
+ * @default 16
+ *
+ * @param ---Slot Type 29---
+ * @default
+ *
+ * @param Slot Type 29 Name
+ * @desc This is the name for Slot Type 29.
+ * @default Type 29
+ *
+ * @param Slot Type 29 Color
+ * @desc This is the color for Slot Type 29 name.
+ * @default 16
+ *
+ * @param ---Slot Type 30---
+ * @default
+ *
+ * @param Slot Type 30 Name
+ * @desc This is the name for Slot Type 30.
+ * @default Type 30
+ *
+ * @param Slot Type 30 Color
+ * @desc This is the color for Slot Type 30 name.
+ * @default 16
+ *
  * @help
  * ============================================================================
  * Introduction
@@ -102,6 +435,151 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  *
  * All actors can only use the skills equipped in their own Skill Slots.
  * Also, only those equipped skills will show up in their batlle skill window.
+ *
+ * ============================================================================
+ * Slot Types
+ * ============================================================================
+ * Each skill has their own Slot Type that decide the skill placement in the
+ * Equip Skill menu. Skill can only be equipped in the actor's Skill Slot with
+ * same Slot Type as the skill's Slot Type.
+ *
+ * There are 31 different Slot Types available in this plugin.
+ * It starts from Slot Type 0 to Slot Type 30.
+ * Each Slot Type has its own different name and color that you can customize
+ * in the plugin configurations.
+ *
+ * You must assign every skill in your database into a Slot Type.
+ * Simply insert this notetag into the skill's notebox.
+ *
+ * <EQS Type: x>      // This skill's Slot Type will be x.
+ *
+ * Example:
+ * <EQS Type: 2>      // This skill's Slot Type is Slot Type 2.
+ * <EQS Type: 30>     // This skill's Slot Type is Slot Type 30.
+ *
+ * IMPORTANT!
+ * Slot Type 0 is a very special type!
+ * This is pretty much the default Slot Type for the skill if you do not use
+ * the above notetag. Also this Slot Type doesn't have a name.
+ * Any skill with Slot Type 0 will be shown differently in the scene compare to
+ * Slot Type 1 to 30. The skill will not show its Slot Type name (because it
+ * doesn't have any). The skill's name will be adjusted to the very left.
+ *
+ * ============================================================================
+ * Maximum Skill Slots and Maximum Equip Limit
+ * ============================================================================
+ * All actors now possess 2 new parameters, Maximum Skill Slots and Maximum
+ * Equip Limit.
+ *
+ * Maximum Skill Slots is the maximum amount of Skills that can be equipped by
+ * the actor. Each actor can have different Maximum Skill Slots for each Slot
+ * Types. Maximum Skill Slots is also level dependent. You can set up Maximum
+ * Skill Slots to increase alongside actor's level.
+ *
+ * To set up actor's Maximum Skill Slots, insert these notetags into actor's
+ * respective notebox:
+ *
+ * <EQS Max Slots x Level y: n>       // Maximum Skill Slots for Slot Type x
+ *                                    // during level y is n.
+ * <EQS Max Slots x Level y to z: n>  // Maximum Skill Slots for Slot Type x
+ *                                    // during level y to z is n.
+ *
+ * Example:
+ * <EQS Max Slots 12 Level 1: 4>        // Maximum Skill Slots for Slot Type 12
+ *                                      // during level 1 is 4.
+ * <EQS Max Slots 12 Level 2 to 99: 6>  // Maximum Skill Slots for Slot Type 12
+ *                                      // during level 2 until level 99 is 6.
+ *
+ * If you don't use any of those notetags, the actor won't have any Skill Slots
+ * available. Therefore, the actor cannot equip any skill.
+ *
+ * The next parameter is Maximum Equip Limit. Every skill has a special equip
+ * cost. In order to equip a skill, the actor's Maximum Equip Limit must be
+ * equal or greater than the skill's Equip Cost.
+ *
+ * The higher actor's Maximum Equip Limit means the actor is able to equip skill
+ * with higher Equip Cost.
+ *
+ * Similar to Maximum Skill Slots, Maximum Equip Limit is also level dependent.
+ * You can set up actor's Maximum Equip Limit to increase alongside actor's
+ * level.
+ *
+ * To set up actor's Maximum Equip Limit, insert these notetags into actor's
+ * respective notebox:
+ *
+ * <EQS Max Limit x: n>              // Maximum Equip Limit at level x is n.
+ * <EQS Max Limit x to y: n>         // Maximum Equip Limit at level x to
+ *                                   // level y is n.
+ *
+ * Example:
+ * <EQS Max Limit 1: 10>             // Maximum Equip Limit at level 1 is 10.
+ * <EQS Max Limit 2 to 5: 20>        // Maximum Equip limit at level 2 to
+ *                                   // level 5 is 20.
+ *
+ * If you don't use the above notetags (or there is incomplete data for certain
+ * levels), actor's Maximum Equip Limit will use the default value in the
+ * "Default Max Limit" plugin configuration.
+ *
+ * There are 2 other ways to increase the number of Skill Slots and Equip Limit.
+ * The first one is by equipping "Slot Plus" and/or "Limit Plus" traits to the
+ * actor. "Slot Plus" will increase Maximum Skill Slots while "Limit Plus" will
+ * increase Maximum Equip Limit.
+ *
+ * You can add these 2 new traits to Actors, Classes, Weapons, Armors, and
+ * States by using notetags:
+ *
+ * <EQS Slot Plus x: y>         // Increase Maximum Skill Slots for Slot Type x
+ *                              // by y amount.
+ * <EQS Limit Plus: x>          // Increase Maximum Equip Limit by x amount.
+ *
+ * Example:
+ * <EQS Slot Plus 3: 1>         // Increase Maximum Skill Slots for Slot Type 3
+ *                              // by 1.
+ * <EQS Limit Plus: 5>          // Increase Maximum Equip Limit by 5.
+ *
+ * For example, if you put <EQS Slot Plus 4: 2> to "Short Sword". Any actor that
+ * equips the "Short Sword" will receive 2 extra Skill Slots for Slot Type 4.
+ * If that actor unequips the sword, he/she will lose the 2 extra Skill Slots
+ * again.
+ *
+ * The other way to increase Maximum Skill Slots and Maximum Equip Limit is by
+ * using "Slot Grow" and/or "Limit Grow" effects. Both effects will increase
+ * Maximum Skill Slots and Maximum Equip Limit parameters permanently.
+ *
+ * Both effects can be assigned to Items and Skills by using notetags:
+ *
+ * <EQS Slot Grow x: y>       // Permanently increase Maximum Skill Slots for
+ *                            // Slot Type x of Item/Skill's target by y.
+ * <EQS Limit Grow: x>        // Permanently increase Maximum Equip Limit
+ *                            // of Item/Skill's target by x.
+ *
+ * Example:
+ * <EQS Slot Grow 0: 1>       // The target of this Item/Skill will get 1 extra
+ *                            // slot for Slot Type 0. This effect is permanent.
+ * <EQS Limit Grow: 10>       // The target of this Item/Skill will get 10 extra
+ *                            // Maximum Equip Limit permanently.
+ *
+ * You can use this notetag on some rare "one and only" item in the game to
+ * increase an actor's Maximum Skill Slots and/or Equip Limit.
+ *
+ * IMPORTANT!
+ * Each skill/item can only have 1 slot grow effect!
+ * Currently, you cannot make a skill/item have 2 or more <EQS Slot Grow x: y>
+ * notetags.
+ *
+ * Both above grow effects can be applied by using plugin command too!
+ *
+ * EQS Actor x Type y Grow n      // Permanently increase Actor x's Maximum
+ *                                // Skill Slots for Slot Type y by n.
+ * EQS Actor x Limit Grow n       // Permanently Increase Actor x's Maximum
+ *                                // Equip Limit by n.
+ * Example:
+ * EQS Actor 5 Type 3 Grow 2      // Actor 5 will get 2 extra slots for Slot
+ *                                // Type 3. This effect is permanent.
+ * EQS Actor 4 Limit Grow 5       // Actor 4 will get 5 extra Maximum Equip
+ *                                // Limit permanently.
+ *
+ * Use above plugin commands wisely.
  *
  * ============================================================================
  * How to Equip Skills
@@ -118,8 +596,8 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * equip them first.
  *
  * 2. Actor must have at least 1 free Skill Slot available. Each individual
- * skill takes 1 Skill Slot from the actor's maximum Skill Slots. An actor
- * with 5 maximum Skill Slots can equip up to 5 different skills.
+ * skill takes 1 Skill Slot from the actor's Maximum Skill Slots. An actor
+ * with 5 Maximum Skill Slots can equip up to 5 different skills.
  *
  * 3. Actor must be able to "pay" the skill's Equip Cost. It means that actor's
  * remaining Equip Limit must be equal or greater than the skill's Equip Cost.
@@ -131,118 +609,100 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  *
  * The second method to equip skills is by using a plugin command:
  *
- * EQS Actor x Slot y Skill z          // Equip skill with id z to Actor x's
- *                                     // Slot number y.
+ * EQS Actor x Type y Slot z Skill n    // Equip skill with id n to Actor x's
+ *                                      // Slot number z of Slot Type y.
+ *
+ * Example:
+ * EQS Actor 6 Type 14 Slot 2 Skill 23  // Actor 6 will equip Skill 23 to his/her
+ *                                      // Skill Slot of Slot Type 14 (at second
+ *                                      // position).
  *
  * Keep in mind that any skill that you try to equip with this plugin command
  * must follow ALL of the 4 rules above. Otherwise, nothing happens.
  *
  * ============================================================================
- * Maximum Skill Slots and Maximum Equip Limit
- * ============================================================================
- * All actors now possess 2 new parameters, Maximum Skill Slots and Maximum
- * Equip Limit. Both parameters are assigned by writing notetags into Actors
- * noteboxes.
- *
- * <EQS Max Slots x: n>               // Maximum Skill Slots at level x is n.
- * <EQS Max Slots x to y: n>          // Maximum Skill Slots from level x to
- *                                       level y is n.
- * <EQS Max Limit x: n>               // Maximum Equip Limit at level x is n.
- * <EQS Max Limit x to y: n>          // Maximum Equip Limit at level x to
- *                                       level y is n.
- *
- * With above notetags, you can decide how many Skill Slots and Equip Limit
- * that each actor has at certain level. If you do not input those notetags,
- * the value of those 2 parameters will be automatically set to default value
- * (check the plugin configurations for detail).
- *
- * There are 2 other ways to increase the number of Skill Slots and Equip Limit.
- * The first one is by equipping "Slot Plus" and/or "Limit Plus" traits to the
- * actor. "Slot Plus" will increase maximum Skill Slots while "Limit Plus" will
- * increase maximum Equip Limit.
- *
- * You can add these 2 new traits to Actors, Classes, Weapons, Armors, and
- * States by using notetags:
- *
- * <EQS Slot Plus: x>                // Increase maximum Skill Slots by x.
- * <EQS Limit Plus: x>               // Increase maximum Equip Limit by x.
- *
- * For example, if you put <EQS Slot Plus: 2> to "Short Sword". Any actor that
- * equips the "Short Sword" will receive 2 extra Skill Slots. If that actor
- * unequips the sword, he/she will lose 2 extra Skill Slots again.
- *
- * The other way to increase maximum Skill Slots and maximum Equip Limit is by
- * using "Slot Grow" and/or "Limit Grow" effects. Both effects will increase
- * maximum Skill Slots and maximum Equip Limit parameters permanently.
- *
- * Both effects can be assigned to Items and Skills by using notetags:
- *
- * <EQS Slot Grow: x>               // Permanently increase maximum Skill Slots
- *                                  // of Item/Skill's target by x.
- * <EQS Limit Grow: x>              // Permanently increase maximum Equip Limit
- *                                  // of Item/Skill's target by x.
- *
- * You can use this notetag on some rare "one and only" item in the game to
- * increase an actor's Skill Slots and/or Equip Limit.
- *
- * Grow effects can be applied by using plugin command too!
- *
- * EQS Actor x Slot Grow y         // Permanently increase Actor x's maximum
- *                                 // Skill Slots by y.
- * EQS Actor x Limit Grow y        // Permanently Increase Actor x's maximum
- *                                 // Equip Limit by y.
- *
- * Use above plugin commands wisely.
- *
- * ============================================================================
- * Skill Equip Cost
+ * Equip Cost
  * ============================================================================
  * Each skill can have different (or same) Equip Cost. You can assigned the
  * skill's Equip Cost by adding this notetag into the skill's notebox:
  *
- * <EQS Cost: x>                   // Skill Equip Cost will be x.
+ * <EQS Cost: x>          // Skill Equip Cost will be x.
+ *
+ * Example:
+ * <EQS Cost: 70>         // This skill's Equip Cost is 70.
  *
  * If you don't add this notetag, the Equip Cost will use the default value in
- * plugin configurations.
+ * "Default Equip Cost" plugin configuration.
  *
  * ============================================================================
- * Notetags and Plugin Commands Example
+ * Equip Skill Exception
+ * ============================================================================
+ * What if you want a certain skill to be able to be used freely without the
+ * need to equip it first? Yes, you can.
+ *
+ * You can make certain skill to be "immune" to the "must be equip first" rule
+ * of this plugin by inserting this notetag into the skill's notebox:
+ *
+ * <EQS Ignore>      // This skill doesn't need to be equip.
+ *
+ * That skill can be used immediately after it is learned without the need to
+ * equip it. Also, you will not see that skill show up in the Skill Pool window.
+ *
+ * ============================================================================
+ * Hiding Equip Skill Menu
+ * ============================================================================
+ * If for some reason you want the Equip Skill menu to be hidden for certain
+ * actor or class, simply put this notetag into Actors or Classes notebox:
+ *
+ * <EQS Hide>      // The Equip Skill Menu will be hidden for this actor/class.
+ *
+ * IMPORTANT!
+ * Hiding is NOT the same as disabling/removing/erasing!
+ * That actor/class is still "affected" by this plugin's "Equip Skill Rule".
+ * So, it's best to combine this notetag with <EQS Ignore> notetag for their
+ * skills.
+ *
+ * ============================================================================
+ * Notetags and Plugin Commands List
  * ============================================================================
  * Actors Notetags:
- * <EQS Max Slots 1: 3>
- * <EQS Max Slots 2 to 10: 4>
- * <EQS Max Limit 1: 10>
- * <EQS Max Limit 2 to 5: 20>
+ * <EQS Max Slots x Level y: n>
+ * <EQS Max Slots x Level y to z: n>
+ * <EQS Max Limit x: n>
+ * <EQS Max Limit x to y: n>
  *
  * Actors, Classes, Weapons, Armors, and States Notetags:
- * <EQS Slot Plus: 3>
- * <EQS Limit Plus: 5>
+ * <EQS Slot Plus x: y>
+ * <EQS Limit Plus: x>
  *
  * Skills Notetags:
- * <EQS Cost: 2>
+ * <EQS Cost: x>
+ * <EQS Type: x>
+ * <EQS Ignore>
  *
  * Items and Skills Notetags:
- * <EQS Slot Grow: 1>
- * <EQS Limit Grow: 15>
+ * <EQS Slot Grow x: y>
+ * <EQS Limit Grow: x>
  *
- * Plugin Command:
- * EQS Actor 1 Slot 2 Skill 23
- * EQS Actor 3 Slot Grow 2
- * EQS Actor 4 Limit Grow 5
+ * Actors and Classes Notetags:
+ * <EQS Hide>
  *
- * ============================================================================
- * NEW Notetag! <EQS Ignore>
- * ============================================================================
- * By putting this notetag inside skill's notebox, you can make that skill
- * to be "immune" to the "must be equip first" rule of this plugin.
- * That skill can be used immediately after it is learned without the need to
- * equip it.
- * Also, you will not see that skill show up in Skill Pool window.
+ * Plugin Commands:
+ * EQS Actor x Type y Slot z Skill n
+ * EQS Actor x Type y Grow n
+ * EQS Actor x Limit Grow n
+ *
+ * SPECIAL Plugin Command!
+ *
+ * EQS Switch x Actor y Skill z
+ * "The engine will check Actor y's Skill Slots for any skill z. If skill z is
+ * equipped, in-game switch with ID x will be ON, otherwise the switch will be
+ * OFF instead. This is useful if you want to check whether actor has certain
+ * skill equipped or not."
  *
  * ============================================================================
  * Compatibility
  * ============================================================================
- * If you use YEP_SkillLearnSystem plugin, position this plugin below it.
  * If you use Moogle_X_EquipSkillSystem_JpAddOn plugin, position this plugin
  * above it.
  * If you use Moogle_X_PassiveSkill plugin, position this plugin above it.
@@ -252,6 +712,16 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Free to use in both commercial and non-commercial project as long as credit
  * is given.
+ *
+ * ============================================================================
+ * Change Log
+ * ============================================================================
+ * Version 1.4:
+ * - Added equip slot types functionality.
+ * - Added option to hide Equip Skill menu for certain actor/class.
+ *
+ * Version 1.0:
+ * - Completed plugin.
  *
  */
 //=============================================================================
@@ -263,7 +733,6 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 //=============================================================================
 
 Moogle_X.EQS.parameters = PluginManager.parameters('Moogle_X_EquipSkillSystem');
-Moogle_X.EQS.defMaxSlots = Number(Moogle_X.EQS.parameters['Default Max Slots'] || 5);
 Moogle_X.EQS.defMaxLimit = Number(Moogle_X.EQS.parameters['Default Max Limit'] || 10);
 Moogle_X.EQS.defEquipCost = Number(Moogle_X.EQS.parameters['Default Equip Cost'] || 0);
 Moogle_X.EQS.eqsVocab = String(Moogle_X.EQS.parameters['Equip Skill Command Name'] || 'Equip');
@@ -279,12 +748,199 @@ Moogle_X.EQS.poolColor = Number(Moogle_X.EQS.parameters['Skill Pool Text Color']
 Moogle_X.EQS.eqsCostText = String(Moogle_X.EQS.parameters['Equip Cost Text'] || '');
 Moogle_X.EQS.eqsCostColor = Number(Moogle_X.EQS.parameters['Equip Cost Text Color'] || 0);
 Moogle_X.EQS.eqsCostNumberColor = Number(Moogle_X.EQS.parameters['Equip Cost Number Color'] || 0);
+Moogle_X.EQS.slotTypeRectWidth = Number(Moogle_X.EQS.parameters['Slot Type Name Rectangle Width'] || 120);
+
+// Slot Types variables.
+
+Moogle_X.EQS.slotTypes = [];
+Moogle_X.EQS.slotTypes.push(null); // Slot Type 0
+
+// Slot Type 1
+var paramType1Name = String(Moogle_X.EQS.parameters['Slot Type 1 Name'] || '');
+var paramType1Color = Number(Moogle_X.EQS.parameters['Slot Type 1 Color'] || 0);
+var paramType1 = {"name":paramType1Name,"color":paramType1Color};
+Moogle_X.EQS.slotTypes.push(paramType1);
+
+// Slot Type 2
+var paramType2Name = String(Moogle_X.EQS.parameters['Slot Type 2 Name'] || '');
+var paramType2Color = Number(Moogle_X.EQS.parameters['Slot Type 2 Color'] || 0);
+var paramType2 = {"name":paramType2Name,"color":paramType2Color};
+Moogle_X.EQS.slotTypes.push(paramType2);
+
+// Slot Type 3
+var paramType3Name = String(Moogle_X.EQS.parameters['Slot Type 3 Name'] || '');
+var paramType3Color = Number(Moogle_X.EQS.parameters['Slot Type 3 Color'] || 0);
+var paramType3 = {"name":paramType3Name,"color":paramType3Color};
+Moogle_X.EQS.slotTypes.push(paramType3);
+
+// Slot Type 4
+var paramType4Name = String(Moogle_X.EQS.parameters['Slot Type 4 Name'] || '');
+var paramType4Color = Number(Moogle_X.EQS.parameters['Slot Type 4 Color'] || 0);
+var paramType4 = {"name":paramType4Name,"color":paramType4Color};
+Moogle_X.EQS.slotTypes.push(paramType4);
+
+// Slot Type 5
+var paramType5Name = String(Moogle_X.EQS.parameters['Slot Type 5 Name'] || '');
+var paramType5Color = Number(Moogle_X.EQS.parameters['Slot Type 5 Color'] || 0);
+var paramType5 = {"name":paramType5Name,"color":paramType5Color};
+Moogle_X.EQS.slotTypes.push(paramType5);
+
+// Slot Type 6
+var paramType6Name = String(Moogle_X.EQS.parameters['Slot Type 6 Name'] || '');
+var paramType6Color = Number(Moogle_X.EQS.parameters['Slot Type 6 Color'] || 0);
+var paramType6 = {"name":paramType6Name,"color":paramType6Color};
+Moogle_X.EQS.slotTypes.push(paramType6);
+
+// Slot Type 7
+var paramType7Name = String(Moogle_X.EQS.parameters['Slot Type 7 Name'] || '');
+var paramType7Color = Number(Moogle_X.EQS.parameters['Slot Type 7 Color'] || 0);
+var paramType7 = {"name":paramType7Name,"color":paramType7Color};
+Moogle_X.EQS.slotTypes.push(paramType7);
+
+// Slot Type 8
+var paramType8Name = String(Moogle_X.EQS.parameters['Slot Type 8 Name'] || '');
+var paramType8Color = Number(Moogle_X.EQS.parameters['Slot Type 8 Color'] || 0);
+var paramType8 = {"name":paramType8Name,"color":paramType8Color};
+Moogle_X.EQS.slotTypes.push(paramType8);
+
+// Slot Type 9
+var paramType9Name = String(Moogle_X.EQS.parameters['Slot Type 9 Name'] || '');
+var paramType9Color = Number(Moogle_X.EQS.parameters['Slot Type 9 Color'] || 0);
+var paramType9 = {"name":paramType9Name,"color":paramType9Color};
+Moogle_X.EQS.slotTypes.push(paramType9);
+
+// Slot Type 10
+var paramType10Name = String(Moogle_X.EQS.parameters['Slot Type 10 Name'] || '');
+var paramType10Color = Number(Moogle_X.EQS.parameters['Slot Type 10 Color'] || 0);
+var paramType10 = {"name":paramType10Name,"color":paramType10Color};
+Moogle_X.EQS.slotTypes.push(paramType10);
+
+// Slot Type 11
+var paramType11Name = String(Moogle_X.EQS.parameters['Slot Type 11 Name'] || '');
+var paramType11Color = Number(Moogle_X.EQS.parameters['Slot Type 11 Color'] || 0);
+var paramType11 = {"name":paramType11Name,"color":paramType11Color};
+Moogle_X.EQS.slotTypes.push(paramType11);
+
+// Slot Type 12
+var paramType12Name = String(Moogle_X.EQS.parameters['Slot Type 12 Name'] || '');
+var paramType12Color = Number(Moogle_X.EQS.parameters['Slot Type 12 Color'] || 0);
+var paramType12 = {"name":paramType12Name,"color":paramType12Color};
+Moogle_X.EQS.slotTypes.push(paramType12);
+
+// Slot Type 13
+var paramType13Name = String(Moogle_X.EQS.parameters['Slot Type 13 Name'] || '');
+var paramType13Color = Number(Moogle_X.EQS.parameters['Slot Type 13 Color'] || 0);
+var paramType13 = {"name":paramType13Name,"color":paramType13Color};
+Moogle_X.EQS.slotTypes.push(paramType13);
+
+// Slot Type 14
+var paramType14Name = String(Moogle_X.EQS.parameters['Slot Type 14 Name'] || '');
+var paramType14Color = Number(Moogle_X.EQS.parameters['Slot Type 14 Color'] || 0);
+var paramType14 = {"name":paramType14Name,"color":paramType14Color};
+Moogle_X.EQS.slotTypes.push(paramType14);
+
+// Slot Type 15
+var paramType15Name = String(Moogle_X.EQS.parameters['Slot Type 15 Name'] || '');
+var paramType15Color = Number(Moogle_X.EQS.parameters['Slot Type 15 Color'] || 0);
+var paramType15 = {"name":paramType15Name,"color":paramType15Color};
+Moogle_X.EQS.slotTypes.push(paramType15);
+
+// Slot Type 16
+var paramType16Name = String(Moogle_X.EQS.parameters['Slot Type 16 Name'] || '');
+var paramType16Color = Number(Moogle_X.EQS.parameters['Slot Type 16 Color'] || 0);
+var paramType16 = {"name":paramType16Name,"color":paramType16Color};
+Moogle_X.EQS.slotTypes.push(paramType16);
+
+// Slot Type 17
+var paramType17Name = String(Moogle_X.EQS.parameters['Slot Type 17 Name'] || '');
+var paramType17Color = Number(Moogle_X.EQS.parameters['Slot Type 17 Color'] || 0);
+var paramType17 = {"name":paramType17Name,"color":paramType17Color};
+Moogle_X.EQS.slotTypes.push(paramType17);
+
+// Slot Type 18
+var paramType18Name = String(Moogle_X.EQS.parameters['Slot Type 18 Name'] || '');
+var paramType18Color = Number(Moogle_X.EQS.parameters['Slot Type 18 Color'] || 0);
+var paramType18 = {"name":paramType18Name,"color":paramType18Color};
+Moogle_X.EQS.slotTypes.push(paramType18);
+
+// Slot Type 19
+var paramType19Name = String(Moogle_X.EQS.parameters['Slot Type 19 Name'] || '');
+var paramType19Color = Number(Moogle_X.EQS.parameters['Slot Type 19 Color'] || 0);
+var paramType19 = {"name":paramType19Name,"color":paramType19Color};
+Moogle_X.EQS.slotTypes.push(paramType19);
+
+// Slot Type 20
+var paramType20Name = String(Moogle_X.EQS.parameters['Slot Type 20 Name'] || '');
+var paramType20Color = Number(Moogle_X.EQS.parameters['Slot Type 20 Color'] || 0);
+var paramType20 = {"name":paramType20Name,"color":paramType20Color};
+Moogle_X.EQS.slotTypes.push(paramType20);
+
+// Slot Type 21
+var paramType21Name = String(Moogle_X.EQS.parameters['Slot Type 21 Name'] || '');
+var paramType21Color = Number(Moogle_X.EQS.parameters['Slot Type 21 Color'] || 0);
+var paramType21 = {"name":paramType21Name,"color":paramType21Color};
+Moogle_X.EQS.slotTypes.push(paramType21);
+
+// Slot Type 22
+var paramType22Name = String(Moogle_X.EQS.parameters['Slot Type 22 Name'] || '');
+var paramType22Color = Number(Moogle_X.EQS.parameters['Slot Type 22 Color'] || 0);
+var paramType22 = {"name":paramType22Name,"color":paramType22Color};
+Moogle_X.EQS.slotTypes.push(paramType22);
+
+// Slot Type 23
+var paramType23Name = String(Moogle_X.EQS.parameters['Slot Type 23 Name'] || '');
+var paramType23Color = Number(Moogle_X.EQS.parameters['Slot Type 23 Color'] || 0);
+var paramType23 = {"name":paramType23Name,"color":paramType23Color};
+Moogle_X.EQS.slotTypes.push(paramType23);
+
+// Slot Type 24
+var paramType24Name = String(Moogle_X.EQS.parameters['Slot Type 24 Name'] || '');
+var paramType24Color = Number(Moogle_X.EQS.parameters['Slot Type 24 Color'] || 0);
+var paramType24 = {"name":paramType24Name,"color":paramType24Color};
+Moogle_X.EQS.slotTypes.push(paramType24);
+
+// Slot Type 25
+var paramType25Name = String(Moogle_X.EQS.parameters['Slot Type 25 Name'] || '');
+var paramType25Color = Number(Moogle_X.EQS.parameters['Slot Type 25 Color'] || 0);
+var paramType25 = {"name":paramType25Name,"color":paramType25Color};
+Moogle_X.EQS.slotTypes.push(paramType25);
+
+// Slot Type 26
+var paramType26Name = String(Moogle_X.EQS.parameters['Slot Type 26 Name'] || '');
+var paramType26Color = Number(Moogle_X.EQS.parameters['Slot Type 26 Color'] || 0);
+var paramType26 = {"name":paramType26Name,"color":paramType26Color};
+Moogle_X.EQS.slotTypes.push(paramType26);
+
+// Slot Type 27
+var paramType27Name = String(Moogle_X.EQS.parameters['Slot Type 27 Name'] || '');
+var paramType27Color = Number(Moogle_X.EQS.parameters['Slot Type 27 Color'] || 0);
+var paramType27 = {"name":paramType27Name,"color":paramType27Color};
+Moogle_X.EQS.slotTypes.push(paramType27);
+
+// Slot Type 28
+var paramType28Name = String(Moogle_X.EQS.parameters['Slot Type 28 Name'] || '');
+var paramType28Color = Number(Moogle_X.EQS.parameters['Slot Type 28 Color'] || 0);
+var paramType28 = {"name":paramType28Name,"color":paramType28Color};
+Moogle_X.EQS.slotTypes.push(paramType28);
+
+// Slot Type 29
+var paramType29Name = String(Moogle_X.EQS.parameters['Slot Type 29 Name'] || '');
+var paramType29Color = Number(Moogle_X.EQS.parameters['Slot Type 29 Color'] || 0);
+var paramType29 = {"name":paramType29Name,"color":paramType29Color};
+Moogle_X.EQS.slotTypes.push(paramType29);
+
+// Slot Type 30
+var paramType30Name = String(Moogle_X.EQS.parameters['Slot Type 30 Name'] || '');
+var paramType30Color = Number(Moogle_X.EQS.parameters['Slot Type 30 Color'] || 0);
+var paramType30 = {"name":paramType30Name,"color":paramType30Color};
+Moogle_X.EQS.slotTypes.push(paramType30);
 
 //=============================================================================
 // Constant Declaration
 //=============================================================================
-Game_BattlerBase.TRAIT_SLOT_PLUS   = 112; // New trait code.
-Game_BattlerBase.TRAIT_LIMIT_PLUS  = 113; // New trait code.
+Game_BattlerBase.TRAIT_EQS_SLOT_PLUS = 112; // New trait code.
+Game_BattlerBase.TRAIT_EQS_LIMIT_PLUS = 113; // New trait code.
+Game_BattlerBase.MAX_EQS_SLOT_TYPES = 30;  // Maximum number of equip slot types.
 
 //=============================================================================
 // DataManager
@@ -302,136 +958,177 @@ DataManager.isDatabaseLoaded = function() {
     DataManager.readNotetags_EQS3($dataSkills);
     DataManager.readNotetags_EQS4($dataItems);
     DataManager.readNotetags_EQS4($dataSkills);
+    DataManager.readNotetags_EQS5($dataActors);
+    DataManager.readNotetags_EQS5($dataClasses);
 		return true;
 };
 
 DataManager.readNotetags_EQS1 = function(group) {
-	var note1 = /<(?:EQS MAX SLOTS)[ ](\d+):[ ](\d+)>/i;
-  var note2 = /<(?:EQS MAX SLOTS)[ ](\d+)[ ]to[ ](\d+):[ ](\d+)>/i;
-	var note3 = /<(?:EQS MAX LIMIT)[ ](\d+):[ ](\d+)>/i;
-	var note4 = /<(?:EQS MAX LIMIT)[ ](\d+)[ ]to[ ](\d+):[ ](\d+)>/i;
+    var note1 = /<(?:EQS MAX SLOTS)[ ](\d+)[ ](?:LEVEL)[ ](\d+):[ ](\d+)>/i;
+    var note2 = /<(?:EQS MAX SLOTS)[ ](\d+)[ ](?:LEVEL)[ ](\d+)[ ]to[ ](\d+):[ ](\d+)>/i;
+	  var note3 = /<(?:EQS MAX LIMIT)[ ](\d+):[ ](\d+)>/i;
+	  var note4 = /<(?:EQS MAX LIMIT)[ ](\d+)[ ]to[ ](\d+):[ ](\d+)>/i;
 
-	for (var n = 1; n < group.length; n++) {
-		var obj = group[n];
-		var notedata = obj.note.split(/[\r\n]+/);
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
 
-    obj.eqsMaxSlots = {};
-    obj.eqsMaxLimit = {};
+        obj.eqsMaxSlots = {};
+        obj.eqsMaxLimit = {};
 
-    // Initialize both max slots and max limit with default value.
-    var maxLevel = obj.maxLevel;
-    for (var z = 1; z <= maxLevel; z++) {
-      obj.eqsMaxSlots[z] = Moogle_X.EQS.defMaxSlots;
-      obj.eqsMaxLimit[z] = Moogle_X.EQS.defMaxLimit;
-    }
-
-		for (var i = 0; i < notedata.length; i++) {
-			var line = notedata[i];
-			if (line.match(note1)) {
-        var level = Number(RegExp.$1);
-        var slots = Number(RegExp.$2);
-        obj.eqsMaxSlots[level] = slots;
-
-      } else if (line.match(note2)) {
-        var levelBegin = Number(RegExp.$1);
-        var levelLast = Number(RegExp.$2);
-        var slots2 = Number(RegExp.$3);
-        for (var x = levelBegin; x <= levelLast; x++) {
-          obj.eqsMaxSlots[x] = slots2;
+        // Initialize both max slots and max limit with default value.
+        var maxLevel = obj.maxLevel;
+        for (var s = 0; s <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; s++) {
+            var newSlotData = {};
+            for (var z = 0; z <= maxLevel; z++) {
+                newSlotData[z] = 0;
+            }
+            obj.eqsMaxSlots[s] = newSlotData;
         }
 
-      } else if (line.match(note3)) {
-        var level2 = Number(RegExp.$1);
-        var limit = Number(RegExp.$2);
-        obj.eqsMaxLimit[level2] = limit;
-
-      } else if (line.match(note4)) {
-        var levelBegin2 = Number(RegExp.$1);
-        var levelLast2 = Number(RegExp.$2);
-        var limit2 = Number(RegExp.$3);
-        for (var y = levelBegin2; y <= levelLast2; y++) {
-          obj.eqsMaxLimit[y] = limit2;
+        for (var m = 0; m <= maxLevel; m++) {
+            obj.eqsMaxLimit[m] = Moogle_X.EQS.defMaxLimit;
         }
-      }
-		}
-	}
+
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note1)) {
+                var type  = Number(RegExp.$1);
+                var level = Number(RegExp.$2);
+                var slots = Number(RegExp.$3);
+                if (type <= Game_BattlerBase.MAX_EQS_SLOT_TYPES) {
+                    obj.eqsMaxSlots[type][level] = slots;
+                }
+
+            } else if (line.match(note2)) {
+                var type2 = Number(RegExp.$1);
+                var levelBegin = Number(RegExp.$2);
+                var levelLast = Number(RegExp.$3);
+                var slots2 = Number(RegExp.$4);
+                if (type2 <= Game_BattlerBase.MAX_EQS_SLOT_TYPES) {
+                    for (var x = levelBegin; x <= levelLast; x++) {
+                        obj.eqsMaxSlots[type2][x] = slots2;
+                    }
+                }
+
+            } else if (line.match(note3)) {
+                var level2 = Number(RegExp.$1);
+                var limit = Number(RegExp.$2);
+                obj.eqsMaxLimit[level2] = limit;
+
+            } else if (line.match(note4)) {
+                var levelBegin2 = Number(RegExp.$1);
+                var levelLast2 = Number(RegExp.$2);
+                var limit2 = Number(RegExp.$3);
+                for (var y = levelBegin2; y <= levelLast2; y++) {
+                    obj.eqsMaxLimit[y] = limit2;
+                }
+            }
+		    }
+	  }
 };
 
 DataManager.readNotetags_EQS2 = function(group) {
-	var note1 = /<(?:EQS SLOT PLUS):[ ](\d+)>/i;
-	var note2 = /<(?:EQS LIMIT PLUS):[ ](\d+)>/i;
+	  var note1 = /<(?:EQS SLOT PLUS)[ ](\d+):[ ](\d+)>/i;
+	  var note2 = /<(?:EQS LIMIT PLUS):[ ](\d+)>/i;
 
-  var codeSlot = Game_BattlerBase.TRAIT_SLOT_PLUS;
-  var codeLimit = Game_BattlerBase.TRAIT_LIMIT_PLUS;
+    var codeSlot = Game_BattlerBase.TRAIT_EQS_SLOT_PLUS;
+    var codeLimit = Game_BattlerBase.TRAIT_EQS_LIMIT_PLUS;
 
-	for (var n = 1; n < group.length; n++) {
-		var obj = group[n];
-		var notedata = obj.note.split(/[\r\n]+/);
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
 
-		for (var i = 0; i < notedata.length; i++) {
-			var line = notedata[i];
-			if (line.match(note1)) {
-        var slotValue = Number(RegExp.$1);
-        var slotTrait = [{"code":codeSlot,"dataId":0,"value":slotValue}];
-        obj.traits = obj.traits.concat(slotTrait);
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note1)) {
+                var slotType = Number(RegExp.$1);
+                var slotValue = Number(RegExp.$2);
+                var slotTrait = [{"code":codeSlot,"dataId":slotType,"value":slotValue}];
+                obj.traits = obj.traits.concat(slotTrait);
 
-      } else if (line.match(note2)) {
-        var limitValue = Number(RegExp.$1);
-        var limitTrait = [{"code":codeLimit,"dataId":0,"value":limitValue}];
-        obj.traits = obj.traits.concat(limitTrait);
-      }
+            } else if (line.match(note2)) {
+                var limitValue = Number(RegExp.$1);
+                var limitTrait = [{"code":codeLimit,"dataId":0,"value":limitValue}];
+                obj.traits = obj.traits.concat(limitTrait);
+            }
 
-		}
-	}
+		    }
+	  }
 };
 
 DataManager.readNotetags_EQS3 = function(group) {
-	var note1 = /<(?:EQS COST):[ ](\d+)>/i;
-  var note2 = /<(?:EQS IGNORE)>/i;
+    var note1 = /<(?:EQS COST):[ ](\d+)>/i;
+    var note2 = /<(?:EQS IGNORE)>/i;
+    var note3 = /<(?:EQS TYPE):[ ](\d+)>/i;
 
-	for (var n = 1; n < group.length; n++) {
-		var obj = group[n];
-		var notedata = obj.note.split(/[\r\n]+/);
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
 
-    obj.eqsCost = Moogle_X.EQS.defEquipCost;
-    obj.isEqsIgnore = false;
+        obj.eqsCost = Moogle_X.EQS.defEquipCost;
+        obj.isEqsIgnore = false;
+        obj.eqsType = 0;
 
-		for (var i = 0; i < notedata.length; i++) {
-			var line = notedata[i];
-			if (line.match(note1)) {
-        var cost = Number(RegExp.$1);
-        obj.eqsCost = cost;
-      } else if (line.match(note2)) {
-        obj.isEqsIgnore = true;
-      }
-		}
-	}
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note1)) {
+                var cost = Number(RegExp.$1);
+                obj.eqsCost = cost;
+            } else if (line.match(note2)) {
+                obj.isEqsIgnore = true;
+            } else if (line.match(note3)) {
+                var type = Number(RegExp.$1);
+                obj.eqsType = type;
+            }
+		    }
+	  }
 };
 
 DataManager.readNotetags_EQS4 = function(group) {
-	var note1 = /<(?:EQS SLOT GROW):[ ](\d+)>/i;
-	var note2 = /<(?:EQS LIMIT GROW):[ ](\d+)>/i;
+    var note1 = /<(?:EQS SLOT GROW)[ ](\d+):[ ](\d+)>/i;
+	  var note2 = /<(?:EQS LIMIT GROW):[ ](\d+)>/i;
 
-	for (var n = 1; n < group.length; n++) {
-		var obj = group[n];
-		var notedata = obj.note.split(/[\r\n]+/);
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
 
-    obj.eqsSlotGrow = 0;
-    obj.eqsLimitGrow = 0;
+        obj.eqsSlotGrow = {"typeId":0,"grow":0};
+        obj.eqsLimitGrow = 0;
 
-		for (var i = 0; i < notedata.length; i++) {
-			var line = notedata[i];
-			if (line.match(note1)) {
-        var slotIncrease = Number(RegExp.$1);
-        obj.eqsSlotGrow = slotIncrease;
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note1)) {
+                var slotType = Number(RegExp.$1);
+                var slotIncrease = Number(RegExp.$2);
+                obj.eqsSlotGrow["typeId"] = slotType;
+                obj.eqsSlotGrow["grow"] = slotIncrease;
 
-      } else if (line.match(note2)) {
-        var limitIncrease = Number(RegExp.$1);
-        obj.eqsLimitGrow = limitIncrease;
-      }
+            } else if (line.match(note2)) {
+                var limitIncrease = Number(RegExp.$1);
+                obj.eqsLimitGrow = limitIncrease;
+            }
 
-		}
-	}
+		    }
+	  }
+};
+
+DataManager.readNotetags_EQS5 = function(group) {
+    var note = /<(?:EQS HIDE)>/i;
+
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
+
+        obj.eqsHide = false;
+
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note)) {
+                obj.eqsHide = true;
+            }
+		    }
+	  }
 };
 
 //=============================================================================
@@ -441,10 +1138,13 @@ DataManager.readNotetags_EQS4 = function(group) {
 Moogle_X.EQS.Game_Actor_initMembers = Game_Actor.prototype.initMembers;
 Game_Actor.prototype.initMembers = function() {
     Moogle_X.EQS.Game_Actor_initMembers.call(this);
-    this._eqsMaxSlots = 0;
+    this._eqsMaxSlots = {};
     this._eqsMaxLimit = 0;
     this._eqsSlots = {};
-    this._eqsAddedSlots = 0;
+    this._eqsAddedSlots = {};
+    for (var i = 0; i <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; i++) {
+        this._eqsAddedSlots[i] = 0;
+    }
     this._eqsAddedLimit = 0;
 };
 
@@ -456,14 +1156,17 @@ Game_Actor.prototype.setup = function(actorId) {
 };
 
 Game_Actor.prototype.updateEqsParams = function() {
-    this._eqsMaxSlots = this.totalEqsSlots();
+    this._eqsMaxSlots = {};
+    for (var i = 0; i <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; i++) {
+        this._eqsMaxSlots[i] = this.totalEqsSlots(i);
+    }
     this._eqsMaxLimit = this.totalEqsLimit();
 };
 
-Game_Actor.prototype.totalEqsSlots = function() {
-    var baseValue = this.baseEqsSlots();
-    var plusValue = this.eqsSlotsPlus();
-    return baseValue + plusValue + this._eqsAddedSlots;
+Game_Actor.prototype.totalEqsSlots = function(typeId) {
+    var baseValue = this.baseEqsSlots(typeId);
+    var plusValue = this.eqsSlotsPlus(typeId);
+    return baseValue + plusValue + this._eqsAddedSlots[typeId];
 };
 
 Game_Actor.prototype.totalEqsLimit = function() {
@@ -472,27 +1175,32 @@ Game_Actor.prototype.totalEqsLimit = function() {
     return baseValue + plusValue + this._eqsAddedLimit;
 };
 
-Game_Actor.prototype.baseEqsSlots = function() {
-    return this.actor().eqsMaxSlots[this._level];
+Game_Actor.prototype.baseEqsSlots = function(typeId) {
+    return this.actor().eqsMaxSlots[typeId][this._level];
 };
 
 Game_Actor.prototype.baseEqsLimit = function() {
     return this.actor().eqsMaxLimit[this._level];
 };
 
-Game_Actor.prototype.eqsSlotsPlus = function() {
-    return Math.max(this.traitsSumAll(Game_BattlerBase.TRAIT_SLOT_PLUS), 0);
+Game_Actor.prototype.eqsSlotsPlus = function(typeId) {
+    return Math.max(this.traitsSum(Game_BattlerBase.TRAIT_EQS_SLOT_PLUS, typeId), 0);
 };
 
 Game_Actor.prototype.eqsLimitPlus = function() {
-    return Math.max(this.traitsSumAll(Game_BattlerBase.TRAIT_LIMIT_PLUS), 0);
+    return Math.max(this.traitsSumAll(Game_BattlerBase.TRAIT_EQS_LIMIT_PLUS), 0);
 };
 
 Game_Actor.prototype.clearEqsSlots = function() {
     this._eqsSlots = {};
-    for (var i = 1; i <= this._eqsMaxSlots; i++) {
-        this._eqsSlots[i] = 0;
+
+    for (var n = 0; n <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; n++) {
+        this._eqsSlots[n] = {};
+        for (var i = 1; i <= this._eqsMaxSlots[n]; i++) {
+            this._eqsSlots[n][i] = 0;
+        }
     }
+
 };
 
 // The most important function of this plugin. I'm overwriting this.
@@ -519,38 +1227,58 @@ Game_Actor.prototype.skills = function() {
     return list2;
 };
 
-Game_Actor.prototype.getSkillPool = function() {
+// Convert this._eqsSlots into array for easier data manipulation.
+Game_Actor.prototype.getEqsArray = function() {
+    var list = [];
+
+    for (var n = 0; n <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; n++) {
+        for (var i = 1; i <= this._eqsMaxSlots[n]; i++) {
+            if (this._eqsSlots[n] !== undefined) {
+                if (this._eqsSlots[n][i] !== undefined) {
+                    list.push(this._eqsSlots[n][i] || 0);
+                }
+            }
+        }
+    }
+
+    return list;
+};
+
+Game_Actor.prototype.getSkillPool = function(typeId) {
     var array = this._skills;
     array = array.map(function(skillId) {
         return $dataSkills[skillId];
     });
+
+    // Slot Type check addition.
+    array = array.filter(function(skill) {
+        return skill.eqsType === typeId;
+    });
+
     array = array.filter(function(skill) {
         return skill.isEqsIgnore === false;
     });
     return array;
 };
 
-Game_Actor.prototype.equipSkill = function(skill, slotId) {
+Game_Actor.prototype.eqsEquipSkill = function(skill, typeId, slotId) {
     if (!this.canEquipSkill(skill)) return;
-    if (this._eqsSlots[slotId] !== undefined) {
+    if (this._eqsSlots[typeId][slotId] !== undefined) {
         if (skill === null) {
-            this._eqsSlots[slotId] = 0;
+            this._eqsSlots[typeId][slotId] = 0;
         } else {
-            this._eqsSlots[slotId] = skill.id;
+            this._eqsSlots[typeId][slotId] = skill.id;
         }
     }
     this.refresh();
 };
 
 Game_Actor.prototype.canEquipSkill = function(skill) {
-    //if (skill === undefined) {
-    //  return true;
-    //}
     if (skill === null) {
         return true;
     }
     if (this.canPayEqsCost(skill) && !this.eqsSkillEquipped(skill) &&
-        this.isLearnedSkill(skill.id)) {
+        this.isLearnedSkill(skill.id) && !skill.isEqsIgnore) {
         return true;
     } else {
         return false;
@@ -583,17 +1311,6 @@ Game_Actor.prototype.eqsSkillEquipped = function(skill) {
     return list.contains(skill.id) ? true : false;
 };
 
-// Convert this._eqsSlots into array for easier data manipulation.
-Game_Actor.prototype.getEqsArray = function() {
-    var list = [];
-    for (var i = 1; i <= this._eqsMaxSlots; i++) {
-        //if (this._eqsSlots[i]) {
-            list.push(this._eqsSlots[i] || 0);
-        //}
-    }
-    return list;
-};
-
 Moogle_X.EQS.Game_Actor_refresh = Game_Actor.prototype.refresh;
 Game_Actor.prototype.refresh = function() {
     this.eqsRefresh();
@@ -601,45 +1318,43 @@ Game_Actor.prototype.refresh = function() {
 };
 
 Game_Actor.prototype.eqsRefresh = function() {
-    var array = this.eqsObject();
+    var oldSlots = this._eqsSlots;
     this.updateEqsParams();
     this.clearEqsSlots();
-    this.eqsReequip(array);
+    this.eqsReequip(oldSlots);
 };
 
-Game_Actor.prototype.eqsReequip = function(array) {
-    for (var i = 1; i <= this._eqsMaxSlots; i++) {
-        var skill = array[i-1];
-        if (this.canEquipSkill(skill) && skill !== null) {
-            this._eqsSlots[i] = skill.id || 0;
-        } else {
-            this._eqsSlots[i] = 0;
+Game_Actor.prototype.eqsReequip = function(oldSlots) {
+    if (Object.keys(oldSlots).length === 0) return; // Bug fix during actor setup.
+    for (var n = 0; n <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; n++) {
+        for (var i = 1; i <= this._eqsMaxSlots[n]; i++) {
+            var skillId = oldSlots[n][i] || 0;
+            var skill = $dataSkills[skillId];
+
+            if (this.canEquipSkill(skill)) {
+                this._eqsSlots[n][i] = skillId;
+            } else {
+                this._eqsSlots[n][i] = 0; // Could be unnecessary too.
+            }
         }
     }
-};
-
-Game_Actor.prototype.eqsObject = function() {
-    var array = this.getEqsArray();
-    return array.map(function(skillId) {
-        return $dataSkills[skillId];
-    });
 };
 
 Moogle_X.EQS.Game_Actor_levelUp = Game_Actor.prototype.levelUp;
 Game_Actor.prototype.levelUp = function() {
     Moogle_X.EQS.Game_Actor_levelUp.call(this);
-    this.eqsRefresh();
+    this.eqsRefresh(); // Could be unnecessary. Better be safe than sorry.
 };
 
 Moogle_X.EQS.Game_Actor_levelDown = Game_Actor.prototype.levelDown;
 Game_Actor.prototype.levelDown = function() {
     Moogle_X.EQS.Game_Actor_levelDown.call(this);
-    this.eqsRefresh();
+    this.eqsRefresh(); // Could be unnecessary. Better be safe than sorry.
 };
 
-Game_Actor.prototype.addEqsSlots = function(slotIncrease) {
+Game_Actor.prototype.addEqsSlots = function(slotIncrease, typeId) {
     if (slotIncrease < 0) return;
-    this._eqsAddedSlots += slotIncrease;
+    this._eqsAddedSlots[typeId] += slotIncrease;
     this.eqsRefresh();
 };
 
@@ -647,6 +1362,36 @@ Game_Actor.prototype.addEqsLimit = function(limitIncrease) {
     if (limitIncrease < 0) return;
     this._eqsAddedLimit += limitIncrease;
     this.eqsRefresh();
+};
+
+Game_Actor.prototype.isEqsHide = function() {
+    if (this.actor().eqsHide) return true;
+    if (this.currentClass().eqsHide) return true;
+    return false;
+};
+
+Game_Actor.prototype.getEqsSlotList = function() {
+    var list = [];
+
+    for (var n = 0; n <= Game_BattlerBase.MAX_EQS_SLOT_TYPES; n++) {
+        for (var i = 1; i <= this._eqsMaxSlots[n]; i++) {
+            if (this._eqsSlots[n][i] !== undefined) {
+                var slotData = {"typeId": n, "slotId": i,
+                    "skill": $dataSkills[this._eqsSlots[n][i]]};
+                list.push(slotData);
+            }
+        }
+    }
+
+    return list;
+};
+
+Game_Actor.prototype.eqsCheckSkillEquipped = function(skillId, switchId) {
+    if (this.eqsSkillEquipped($dataSkills[skillId])) {
+        $gameSwitches.setValue(switchId, true);
+    } else {
+        $gameSwitches.setValue(switchId, false);
+    }
 };
 
 //=============================================================================
@@ -669,7 +1414,7 @@ Game_Action.prototype.testEqsEffect = function(target) {
 
 Game_Action.prototype.canGrowEqs = function(target) {
     if (target.isActor()) {
-        var slotGrow = this.item().eqsSlotGrow;
+        var slotGrow = this.item().eqsSlotGrow.grow;
         var limitGrow = this.item().eqsLimitGrow;
         return (slotGrow > 0 || limitGrow > 0) ? true : false;
     } else {
@@ -687,9 +1432,10 @@ Game_Action.prototype.applyItemUserEffect = function(target) {
 
 Game_Action.prototype.applyEqsSlotGrow = function(target) {
     if (target.isEnemy()) return;
-    var slotIncrease = this.item().eqsSlotGrow || 0;
+    var typeId = this.item().eqsSlotGrow.typeId;
+    var slotIncrease = this.item().eqsSlotGrow.grow || 0;
     if (slotIncrease > 0) {
-        target.addEqsSlots(slotIncrease);
+        target.addEqsSlots(slotIncrease, typeId);
     }
 };
 
@@ -804,29 +1550,22 @@ Scene_Skill.prototype.onEqsSlotCancel = function() {
 
 Scene_Skill.prototype.onEqsItemOk = function() {
     SoundManager.playEquip();
-    this.actor().equipSkill(this._eqsPoolWindow.item(), this._eqsSlotWindow.index() + 1);
+    this.actor().eqsEquipSkill(this._eqsPoolWindow.item(),
+        this._eqsSlotWindow.item(this._eqsSlotWindow.index()).typeId,
+        this._eqsSlotWindow.item(this._eqsSlotWindow.index()).slotId);
     this._eqsSlotWindow.activate();
     this._eqsSlotWindow.refresh();
     this._eqsPoolWindow.deselect();
     this._eqsPoolWindow.refresh();
     this._eqsLimitWindow.refresh();
     this._statusWindow.refresh();
+    this._eqsSlotWindow.updateHelp();
 };
 
 Scene_Skill.prototype.onEqsItemCancel = function() {
     this._eqsSlotWindow.activate();
     this._eqsPoolWindow.deselect();
 };
-
-// Compatibility fpr YEP_SkillLearnSystem. Simply refresh the skill pool window
-// after learning new skill.
-if (Imported.YEP_SkillLearnSystem) {
-  Moogle_X.EQS.Scene_Skill_onLearnOk = Scene_Skill.prototype.onLearnOk;
-  Scene_Skill.prototype.onLearnOk = function() {
-    Moogle_X.EQS.Scene_Skill_onLearnOk.call(this);
-    this._eqsPoolWindow.refresh();
-  };
-}
 
 //=============================================================================
 // Window_SkillType
@@ -836,7 +1575,11 @@ Moogle_X.EQS.Window_SkillType_makeCommandList =
     Window_SkillType.prototype.makeCommandList;
 Window_SkillType.prototype.makeCommandList = function() {
     Moogle_X.EQS.Window_SkillType_makeCommandList.call(this);
-    this.addCommand(Moogle_X.EQS.eqsVocab, 'eqsEquip', true);
+    if (this._actor) {
+        if (!this._actor.isEqsHide()) {
+            this.addCommand(Moogle_X.EQS.eqsVocab, 'eqsEquip', true);
+        }
+    }
 };
 
 Window_SkillType.prototype.setEqsLimitWindow = function(eqsWindow) {
@@ -909,11 +1652,24 @@ Window_EquipSkillSlot.prototype.setActor = function(actor) {
 };
 
 Window_EquipSkillSlot.prototype.maxItems = function() {
-    return this._actor ? this._actor._eqsMaxSlots : 0;
+    return this._data ? this._data.length : 0;
+};
+
+Window_EquipSkillSlot.prototype.refresh = function() {
+    this.makeItemList();
+    this.createContents();
+    this.drawAllItems();
+};
+
+Window_EquipSkillSlot.prototype.makeItemList = function() {
+    this._data = [];
+    if (!this._actor) return;
+
+    this._data = this._actor.getEqsSlotList();
 };
 
 Window_EquipSkillSlot.prototype.item = function(index) {
-    return this._actor ? $dataSkills[this._actor._eqsSlots[index + 1]] : null;
+    return this._data ? this._data[index] : null;
 };
 
 Window_EquipSkillSlot.prototype.drawItem = function(index) {
@@ -921,11 +1677,28 @@ Window_EquipSkillSlot.prototype.drawItem = function(index) {
         var rect = this.itemRectForText(index);
         this.changeTextColor(this.systemColor());
         this.changePaintOpacity(true);
-        var skill = this.item(index);
-        if (skill) {
-          this.drawItemName(skill, rect.x, rect.y, rect.width);
-        } else {
-          this.drawEmptySlot(rect.x, rect.y, rect.width);
+        var item = this.item(index);
+        var skill = item.skill;
+        var typeId = item.typeId;
+
+        if (typeId === 0) {
+            if (skill) {
+                this.drawItemName(skill, rect.x, rect.y, rect.width);
+            } else {
+                this.drawEmptySlot(rect.x, rect.y, rect.width);
+            }
+
+        } else if (typeId > 0) {
+            this.changeTextColor(this.textColor(Moogle_X.EQS.slotTypes[typeId].color));
+            this.drawText(Moogle_X.EQS.slotTypes[typeId].name, rect.x, rect.y,
+                Moogle_X.EQS.slotTypeRectWidth);
+            if (skill) {
+                this.drawItemName(skill, rect.x + Moogle_X.EQS.slotTypeRectWidth,
+                    rect.y, rect.width);
+            } else {
+                this.drawEmptySlot(rect.x + Moogle_X.EQS.slotTypeRectWidth,
+                    rect.y, rect.width);
+            }
         }
         this.changePaintOpacity(true);
     }
@@ -951,9 +1724,19 @@ Window_EquipSkillSlot.prototype.setItemWindow = function(itemWindow) {
 
 Window_EquipSkillSlot.prototype.updateHelp = function() {
     Window_Selectable.prototype.updateHelp.call(this);
-    this.setHelpWindowItem(this.item(this.index()));
+    if (this.item(this.index()) !== undefined) { // Error blocker!
+        var skillData = this.item(this.index()).skill;
+        this.setHelpWindowItem(skillData);
+    }
     if (this._statusWindow) {
         this._statusWindow.setTempActor(null);
+    }
+};
+
+Window_EquipSkillSlot.prototype.update = function() {
+    Window_Selectable.prototype.update.call(this);
+    if (this.item(this.index())) {
+        this._itemWindow.setTypeId(this.item(this.index()).typeId);
     }
 };
 
@@ -972,12 +1755,13 @@ Window_EquipSkillPool.prototype.initialize = function(x, y, width, height) {
     Window_Selectable.prototype.initialize.call(this, x, y, width, height);
     this._actor = null;
     this._data = [];
-    this._slotId = 0;
+    this._typeId = null;
 };
 
 Window_EquipSkillPool.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
+        this._typeId = null;
         this.refresh();
         this.resetScroll();
     }
@@ -1009,8 +1793,11 @@ Window_EquipSkillPool.prototype.isEnabled = function(item) {
 
 Window_EquipSkillPool.prototype.makeItemList = function() {
     if (this._actor) {
-        this._data = this._actor.getSkillPool();
-        this._data.push(null);
+        this._data = [];
+        if (this._typeId !== null) {
+            this._data = this._actor.getSkillPool(this._typeId);
+            this._data.push(null);
+        }
     } else {
         this._data = [];
     }
@@ -1021,7 +1808,7 @@ Window_EquipSkillPool.prototype.drawItem = function(index) {
     var costWidth = this.costWidth();
     var rect = this.itemRect(index);
     rect.width -= this.textPadding();
-    if (skill !== null) {
+    if (skill) {
         this.changePaintOpacity(this.isEnabled(skill));
         this.drawItemName(skill, rect.x, rect.y, rect.width - costWidth);
         this.drawEquipCost(skill, rect.x, rect.y, rect.width);
@@ -1058,6 +1845,11 @@ Window_EquipSkillPool.prototype.refresh = function() {
     this.makeItemList();
     this.createContents();
     this.drawAllItems();
+};
+
+Window_EquipSkillPool.prototype.setTypeId = function(typeId) {
+    this._typeId = typeId;
+    this.refresh();
 };
 
 //=============================================================================
@@ -1161,13 +1953,20 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
     if (command === 'EQS') {
         switch (args[0]) {
         case 'Actor':
-            if (args[2] === "Slot" && args[4] === "Skill") {
-                $gameActors.actor(args[1]).equipSkill($dataSkills[args[5]],
-                    args[3]);
-            } else if (args[2] === "Slot" && args[3] === "Grow") {
-                $gameActors.actor(args[1]).addEqsSlots(Number(args[4]));
+            if (args[2] === "Type" && args[4] === "Slot" && args[6] === "Skill") {
+                $gameActors.actor(args[1]).eqsEquipSkill($dataSkills[args[7]],
+                    Number(args[3]), Number(args[5]));
+            } else if (args[2] === "Type" && args[4] === "Grow") {
+                $gameActors.actor(args[1]).addEqsSlots(Number(args[5]), Number(args[3]));
             } else if (args[2] === "Limit" && args[3] === "Grow") {
                 $gameActors.actor(args[1]).addEqsLimit(Number(args[4]));
+            }
+            break;
+
+        case 'Switch':
+            if (args[2] === "Actor" && args[4] === "Skill") {
+                $gameActors.actor(args[3]).eqsCheckSkillEquipped(Number(args[5]),
+                    Number(args[1]));
             }
             break;
         }
