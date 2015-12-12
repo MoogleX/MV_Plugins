@@ -12,7 +12,7 @@ Moogle_X.EQS_JP = Moogle_X.EQS_JP || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1 Replace Equip Limit with Job Points.
+ * @plugindesc v1.2 Replace Equip Limit with Job Points.
  * @author Moogle_X
  *
  * @help
@@ -44,6 +44,16 @@ Moogle_X.EQS_JP = Moogle_X.EQS_JP || {};
  * Free to use in both commercial and non-commercial project as long as credit
  * is given.
  *
+ * ============================================================================
+ * Change Log
+ * ============================================================================
+ * Version 1.2:
+ * - Compatibility with Equip Skill System plugin v1.4.
+ *
+ * Version 1.0:
+ * - Completed plugin.
+ *
+ *
  */
 //=============================================================================
 
@@ -73,7 +83,7 @@ Game_Actor.prototype.setJp = function(value, classId) {
 
 Game_Action.prototype.canGrowEqs = function(target) {
     if (target.isActor()) {
-        var slotGrow = this.item().eqsSlotGrow;
+        var slotGrow = this.item().eqsSlotGrow.grow;
         var limitGrow = 0; // Changed to 0 for JP compatibility purpose.
         return (slotGrow > 0 || limitGrow > 0) ? true : false;
     } else {
