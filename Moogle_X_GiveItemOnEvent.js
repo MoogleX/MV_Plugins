@@ -80,7 +80,7 @@ Moogle_X.GIOE = Moogle_X.GIOE || {};
  * If you choose "Hi-Potion" and that item's ID is 2, then "Item Variable" value
  * will be 2 as well.
  *
- * And then your chosen item's total amount will be substracted by 1.
+ * And then your chosen item's total amount will be subtracted by 1.
  *
  * What happen if you "exit" the item menu?
  * Both "Category Variable" and "Item Variable" will be 0.
