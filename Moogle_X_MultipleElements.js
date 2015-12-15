@@ -103,10 +103,14 @@ Moogle_X.MultEle = Moogle_X.MultEle || {};
 // DataManager
 //=============================================================================
 
+Moogle_X.MultEle.DatabaseLoaded = false;
 Moogle_X.MultEle.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.MultEle.DataManager_isDatabaseLoaded.call(this)) return false;
-    DataManager.readNotetags_MultEle($dataSkills);
+    if (!Moogle_X.MultEle.DatabaseLoaded) {
+        DataManager.readNotetags_MultEle($dataSkills);
+        Moogle_X.MultEle.DatabaseLoaded = true;
+    }
 		return true;
 };
 
