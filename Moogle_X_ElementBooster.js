@@ -123,15 +123,19 @@ Moogle_X.EleBost.combineRate =
 // DataManager
 //=============================================================================
 
+Moogle_X.EleBost.DatabaseLoaded = false;
 Moogle_X.EleBost.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.EleBost.DataManager_isDatabaseLoaded.call(this)) return false;
-    DataManager.readNotetags_EleBost($dataActors);
-    DataManager.readNotetags_EleBost($dataClasses);
-    DataManager.readNotetags_EleBost($dataEnemies);
-    DataManager.readNotetags_EleBost($dataWeapons);
-    DataManager.readNotetags_EleBost($dataArmors);
-    DataManager.readNotetags_EleBost($dataStates);
+    if (!Moogle_X.EleBost.DatabaseLoaded) {
+        DataManager.readNotetags_EleBost($dataActors);
+        DataManager.readNotetags_EleBost($dataClasses);
+        DataManager.readNotetags_EleBost($dataEnemies);
+        DataManager.readNotetags_EleBost($dataWeapons);
+        DataManager.readNotetags_EleBost($dataArmors);
+        DataManager.readNotetags_EleBost($dataStates);
+        Moogle_X.EleBost.DatabaseLoaded = true;
+    }
 		return true;
 };
 
