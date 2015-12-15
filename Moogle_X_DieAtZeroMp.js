@@ -73,15 +73,19 @@ var defaultEnemiesDead = Number(parameters['All Enemies']) != 0;
 // DataManager
 //=============================================================================
 
+Moogle_X.DieZeroMp.DatabaseLoaded = false;
 Moogle_X.DieZeroMp.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.DieZeroMp.DataManager_isDatabaseLoaded.call(this)) return false;
-		DataManager.readNotetags_dieZeroMp($dataActors);
-    DataManager.readNotetags_dieZeroMp($dataClasses);
-    DataManager.readNotetags_dieZeroMp($dataEnemies);
-    DataManager.readNotetags_dieZeroMp($dataWeapons);
-    DataManager.readNotetags_dieZeroMp($dataArmors);
-    DataManager.readNotetags_dieZeroMp($dataStates);
+    if (!Moogle_X.DieZeroMp.DatabaseLoaded) {
+        DataManager.readNotetags_dieZeroMp($dataActors);
+        DataManager.readNotetags_dieZeroMp($dataClasses);
+        DataManager.readNotetags_dieZeroMp($dataEnemies);
+        DataManager.readNotetags_dieZeroMp($dataWeapons);
+        DataManager.readNotetags_dieZeroMp($dataArmors);
+        DataManager.readNotetags_dieZeroMp($dataStates);
+        Moogle_X.DieZeroMp.DatabaseLoaded = true;
+    }
 		return true;
 };
 
