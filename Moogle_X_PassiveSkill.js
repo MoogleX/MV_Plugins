@@ -139,10 +139,14 @@ Moogle_X.PsvSkl.hiddenSkillTypeId =
 // DataManager
 //=============================================================================
 
+Moogle_X.PsvSkl.DatabaseLoaded = false;
 Moogle_X.PsvSkl.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.PsvSkl.DataManager_isDatabaseLoaded.call(this)) return false;
-    DataManager.readNotetags_PsvSkl($dataSkills);
+    if (!Moogle_X.PsvSkl.DatabaseLoaded) {
+        DataManager.readNotetags_PsvSkl($dataSkills);
+        Moogle_X.PsvSkl.DatabaseLoaded = true;
+    }
 		return true;
 };
 
