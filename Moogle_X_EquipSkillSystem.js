@@ -946,20 +946,24 @@ Game_BattlerBase.MAX_EQS_SLOT_TYPES = 30;  // Maximum number of equip slot types
 // DataManager
 //=============================================================================
 
+Moogle_X.EQS.DatabaseLoaded = false;
 Moogle_X.EQS.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.EQS.DataManager_isDatabaseLoaded.call(this)) return false;
-    DataManager.readNotetags_EQS1($dataActors);
-    DataManager.readNotetags_EQS2($dataActors);
-    DataManager.readNotetags_EQS2($dataClasses);
-    DataManager.readNotetags_EQS2($dataWeapons);
-    DataManager.readNotetags_EQS2($dataArmors);
-    DataManager.readNotetags_EQS2($dataStates);
-    DataManager.readNotetags_EQS3($dataSkills);
-    DataManager.readNotetags_EQS4($dataItems);
-    DataManager.readNotetags_EQS4($dataSkills);
-    DataManager.readNotetags_EQS5($dataActors);
-    DataManager.readNotetags_EQS5($dataClasses);
+    if (!Moogle_X.EQS.DatabaseLoaded) {
+        DataManager.readNotetags_EQS1($dataActors);
+        DataManager.readNotetags_EQS2($dataActors);
+        DataManager.readNotetags_EQS2($dataClasses);
+        DataManager.readNotetags_EQS2($dataWeapons);
+        DataManager.readNotetags_EQS2($dataArmors);
+        DataManager.readNotetags_EQS2($dataStates);
+        DataManager.readNotetags_EQS3($dataSkills);
+        DataManager.readNotetags_EQS4($dataItems);
+        DataManager.readNotetags_EQS4($dataSkills);
+        DataManager.readNotetags_EQS5($dataActors);
+        DataManager.readNotetags_EQS5($dataClasses);
+        Moogle_X.EQS.DatabaseLoaded = true;
+    }
 		return true;
 };
 
