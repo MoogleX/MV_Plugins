@@ -830,12 +830,16 @@ Moogle_X.AFS.customFpIconOffsetY = Number(Moogle_X.AFS.parameters['Custom Friend
 // DataManager
 //=============================================================================
 
+Moogle_X.AFS.DatabaseLoaded = false;
 Moogle_X.AFS.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.AFS.DataManager_isDatabaseLoaded.call(this)) return false;
-		DataManager.readNotetags_AFS1($dataActors);
-    DataManager.readNotetags_AFS2($dataItems);
-    DataManager.readNotetags_AFS2($dataSkills);
+    if (!Moogle_X.AFS.DatabaseLoaded) {
+        DataManager.readNotetags_AFS1($dataActors);
+        DataManager.readNotetags_AFS2($dataItems);
+        DataManager.readNotetags_AFS2($dataSkills);
+        Moogle_X.AFS.DatabaseLoaded = true;
+    }
 		return true;
 };
 
