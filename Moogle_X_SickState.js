@@ -92,10 +92,14 @@ Moogle_X.SickState.sickMessage = String(Moogle_X.SickState.parameters['Sick Mess
 // DataManager
 //=============================================================================
 
+Moogle_X.SickState.DatabaseLoaded = false;
 Moogle_X.SickState.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.SickState.DataManager_isDatabaseLoaded.call(this)) return false;
-    DataManager.readNotetags_SickState($dataItems);
+    if (!Moogle_X.SickState.DatabaseLoaded) {
+        DataManager.readNotetags_SickState($dataItems);
+        Moogle_X.SickState.DatabaseLoaded = true;
+    }
 		return true;
 };
 
