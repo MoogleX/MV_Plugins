@@ -12,7 +12,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v2.01 Adds friendship mechanic between actors.
+ * @plugindesc v2.05 Adds friendship mechanic between actors.
  * @author Moogle_X
  *
  * @param Default All Leaders
@@ -647,6 +647,33 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  *                                    // x's name.
  *
  * ============================================================================
+ * Friendship Common Event
+ * ============================================================================
+ * You can also set up a certain common event to be run at specific Friendship
+ * Level. This common event will be triggered automatically during Friendship
+ * Level Up process. It does NOT triggered during "level down".
+ *
+ * To set up Friendship Common Event, put this notetag inside Actor's notebox:
+ *
+ * <AFS Event Level x Leader y: n>
+ *
+ * When this actor's Friendship Level towards Leader y level up to level x,
+ * common event n will be run.
+ *
+ * Example:
+ * <AFS Event Level 5 Leader 3: 10>
+ *
+ * When this actor's Friendship Level towards Leader 3 is increased (level up)
+ * to level 5. Commmon event with ID number 10 will be executed automatically.
+ *
+ * IMPORTANT!
+ * Only 1 common event can be run at each level.
+ * Also, if the actor's Friendship Level is level up multiple times at once
+ * (because of big FP gain for example), only the LAST triggered common event
+ * will be run. This is not the plugin's bug! This is simply how the default
+ * engine work.
+ *
+ * ============================================================================
  * Notetags List
  * ============================================================================
  * Actors Notetags:
@@ -660,6 +687,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * <AFS Icon Level x Leader y: n>
  * <AFS Icon Level x Leader y: n1, n2, n3, n4, n5>
  * <AFS Lock Icon: x>
+ * <AFS Event Level x Leader y: n>
  *
  * Skills and Items Notetags:
  * <AFS Gain x: n>
@@ -727,6 +755,9 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 2.05:
+ * - Added friendship common event feature.
+ *
  * Version 2.01:
  * - Fixed a game breaking bug when using Skill or Item with FP gain effect.
  *
@@ -851,6 +882,7 @@ DataManager.readNotetags_AFS1 = function(group) {
     var note5 = /<(?:AFS MAX SKILL LEADER)[ ](\d+):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
     var note6 = /<(?:AFS ICON LEVEL)[ ](\d+)[ ](?:LEADER)[ ](\d+):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
     var note7 = /<(?:AFS LOCK ICON):[ ](\d+)>/i;
+    var note8 = /<(?:AFS EVENT LEVEL)[ ](\d+)[ ](?:LEADER)[ ](\d+):[ ](\d+)>/i;
 
   	for (var n = 1; n < group.length; n++) {
         var obj = group[n];
@@ -866,6 +898,8 @@ DataManager.readNotetags_AFS1 = function(group) {
         obj.afsIcons = [];
         obj.afsIcons.push(null);
         obj.afsLockIcon = Moogle_X.AFS.defLockIcon;
+        obj.afsCommonEvents = [];
+        obj.afsCommonEvents.push(null);
 
         for (var z = 1; z < group.length; z++) {
             var empty = {};
@@ -875,6 +909,11 @@ DataManager.readNotetags_AFS1 = function(group) {
         for (var c = 1; c < group.length; c++) {
             var empty = {};
             obj.afsIcons.push(empty);
+        }
+
+        for (var f = 1; f < group.length; f++) {
+            var empty = {};
+            obj.afsCommonEvents.push(empty);
         }
 
         for (var i = 0; i < notedata.length; i++) {
@@ -910,6 +949,12 @@ DataManager.readNotetags_AFS1 = function(group) {
             } else if (line.match(note7)) {
                 var lockIconId = Number(RegExp.$1);
                 obj.afsLockIcon = lockIconId;
+
+            } else if (line.match(note8)) {
+                var ceLevel = Number(RegExp.$1);
+                var ceLeaderId = Number(RegExp.$2);
+                var ceId = Number(RegExp.$3);
+                obj.afsCommonEvents[ceLeaderId][ceLevel] = ceId;
             }
         }
   	}
@@ -1090,8 +1135,9 @@ Game_Actor.prototype.afsLevelUp = function(leaderId) {
         this._afsLevel[leaderId]++;
         this.learnAfsSkill(this.afsLevel(leaderId), leaderId);
         this.learnAfsMaxSkill(leaderId);
+        this.refresh();
+        this.afsRunCommonEvent(leaderId, this._afsLevel[leaderId]);
     }
-    this.refresh();
 };
 
 Game_Actor.prototype.afsLevelDown = function(leaderId) {
@@ -1344,6 +1390,15 @@ Game_Actor.prototype.afsGetBestLevelFriend = function(varId) {
         var index = levelList.indexOf(bestLevel);
         if (index >= 0) {
             $gameVariables.setValue(varId, friendList[index]);
+        }
+    }
+};
+
+// Friendship Commont Event feature.
+Game_Actor.prototype.afsRunCommonEvent = function(leaderId, level) {
+    if (this.actor().afsCommonEvents[leaderId]) {
+        if (this.actor().afsCommonEvents[leaderId][level]) {
+            $gameTemp.reserveCommonEvent(this.actor().afsCommonEvents[leaderId][level]);
         }
     }
 };
