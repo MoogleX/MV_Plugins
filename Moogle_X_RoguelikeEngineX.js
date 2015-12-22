@@ -23,6 +23,12 @@ Moogle_X.REX = Moogle_X.REX || {};
  *
  *
  * ============================================================================
+ * Notetags and Plugin Commands List
+ * ============================================================================
+ * Actors, Classes, Weapons, Armors, and States Notetags:
+ * <REX Belly Rate: x%>
+ *
+ * ============================================================================
  * Compatibility
  * ============================================================================
  *
@@ -51,6 +57,7 @@ Moogle_X.REX.parameters = PluginManager.parameters('Moogle_X_RoguelikeEngineX');
 // Constant Declaration
 //=============================================================================
 
+Game_BattlerBase.TRAIT_REX_BELLY_RATE = 114; // New trait code.
 
 //=============================================================================
 // RexLog
@@ -65,7 +72,7 @@ RexLog.logs = function() {
 };
 
 RexLog.add = function(text) {
-    if (this.logs().length >= 20) {
+    if (this.logs().length >= 20) { // Replace 20 with parameter later.
         this.logs().shift();
     }
     this.logs().push(text);
@@ -82,13 +89,32 @@ DataManager.isDatabaseLoaded = function() {
     if (!Moogle_X.REX.DataManager_isDatabaseLoaded.call(this)) return false;
     if (!Moogle_X.REX.DatabaseLoaded) {
         DataManager.readNotetags_REX1($dataActors);
+        DataManager.readNotetags_REX1($dataClasses);
+        DataManager.readNotetags_REX1($dataWeapons);
+        DataManager.readNotetags_REX1($dataArmors);
+        DataManager.readNotetags_REX1($dataStates);
         Moogle_X.REX.DatabaseLoaded = true;
     }
     return true;
 };
 
 DataManager.readNotetags_REX1 = function(group) {
+  var note1 = /<(?:REX BELLY RATE):[ ](\d+)\%>/i;
 
+  for (var n = 1; n < group.length; n++) {
+      var obj = group[n];
+      var notedata = obj.note.split(/[\r\n]+/);
+
+      for (var i = 0; i < notedata.length; i++) {
+          var line = notedata[i];
+          if (line.match(note1)) {
+              var rate = Number(RegExp.$1) / 100;
+              var code = Game_BattlerBase.TRAIT_REX_BELLY_RATE;
+              var bellyRate = [{"code":code,"dataId":0,"value":rate}];
+              obj.traits = obj.traits.concat(bellyRate);
+          }
+      }
+  }
 };
 
 
@@ -110,11 +136,13 @@ Game_System.prototype.rexInitGameSystem = function() {
 // Plugin Command "REX Mode On"
 Game_System.prototype.rexModeOn = function() {
     this._rexMode = true;
+    // Add window RexLog show later.
 };
 
 // Plugin Command "REX Mode Off"
 Game_System.prototype.rexModeOff = function() {
     this._rexMode = false;
+    // Add window RexLog hide later.
 };
 
 Game_System.prototype.rexMode = function() {
@@ -196,8 +224,75 @@ Game_Map.prototype.rexUpdateEnemyMovement = function() {
 
 Game_Map.prototype.rexGetEnemyList = function() {
     return this._events.filter(function(event) {
-        return event.rexIsBattler();
+        if (event) { // Fix error when loading save file.
+            return event.rexIsBattler();
+        }
     });
+};
+
+//=============================================================================
+// Game_Party
+//=============================================================================
+
+Moogle_X.REX.Game_Party_initialize = Game_Party.prototype.initialize;
+Game_Party.prototype.initialize = function() {
+    Moogle_X.REX.Game_Party_initialize.call(this);
+    this.rexInitPartyBelly();
+};
+
+Game_Party.prototype.rexInitPartyBelly = function() {
+    this._rexBelly = 0;
+    this._rexBellyBase = 100;
+    this._rexBellyPlus = 0;
+    this.rexBellyRefresh();
+};
+
+Game_Party.prototype.rexBelly = function() {
+    return this._rexBelly;
+};
+
+Game_Party.prototype.rexBellyRefresh = function() {
+    this._rexBelly = this.rexMaxBelly();
+};
+
+Game_Party.prototype.rexMaxBelly = function() {
+    var baseValue = this._rexBellyBase + this._rexBellyPlus;
+    var modifier = this.rexBellyModifier();
+    var total = baseValue * modifier;
+    total = Math.max(total, 0);
+    total = Math.round(total);
+    return total;
+};
+
+Game_Party.prototype.rexBellyModifier = function() {
+    var array = this.battleMembers().map(function(member) {
+        return member.rexBellyModifier();
+    });
+    return array.reduce(function(r, mod) {
+        return r * mod;
+    }, 1);
+};
+
+Game_Party.prototype.rexBellyGain = function(value) {
+    var gain = Math.max(value, 0);
+    gain = Math.round(gain);
+    this._rexBelly += gain;
+    this._rexBelly = Math.min(this._rexBelly, this.rexMaxBelly());
+};
+
+Game_Party.prototype.rexBellyLose = function(value) {
+    var lose = Math.max(value, 0);
+    lose = Math.round(lose);
+    this._rexBelly -= lose;
+    this._rexBelly = Math.max(this._rexBelly, 0);
+};
+
+//=============================================================================
+// Game_Actor
+//=============================================================================
+
+Game_Actor.prototype.rexBellyModifier = function() {
+    return this.traitsPi(Game_BattlerBase.TRAIT_REX_BELLY_RATE, 0);
 };
 
 //=============================================================================
@@ -217,8 +312,8 @@ Scene_Map.prototype.rexCreateStatusWindows = function() {
 };
 
 Scene_Map.prototype.rexCreateLeaderStatusWindow = function() {
-    //this._rexLeaderStatusWindow = null;
-    //this.addChild(this._rexLeaderStatusWindow);
+    this._rexLeaderStatusWindow = new Window_RexLeaderStatus();
+    this.addChild(this._rexLeaderStatusWindow);
 };
 
 Scene_Map.prototype.rexCreatePartyStatusWindow = function() {
@@ -229,6 +324,47 @@ Scene_Map.prototype.rexCreatePartyStatusWindow = function() {
 Scene_Map.prototype.rexCreateBattleLogWindow = function() {
     //this._rexBattleLogWindow = new Window_RexLog();
     //this.addChild(this._rexBattleLogWindow);
+};
+
+//=============================================================================
+// Window_RexLeaderStatus
+//=============================================================================
+
+function Window_RexLeaderStatus() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_RexLeaderStatus.prototype = Object.create(Window_Base.prototype);
+Window_RexLeaderStatus.prototype.constructor = Window_RexLeaderStatus;
+
+Window_RexLeaderStatus.prototype.initialize = function(x, y) {
+    var width = Graphics.boxWidth;
+    var height = this.fittingHeight(1);
+    this._width = width;
+    this._height = height;
+    Window_Base.prototype.initialize.call(this, 0, 0, width, height);
+    this.opacity = 0;
+    this.refresh();
+};
+
+Window_RexLeaderStatus.prototype.refresh = function() {
+    this.contents.clear();
+    this.resetFontSettings();
+    this.drawBackground(0, 0, this._width, this._height);
+    this.drawText("B2F", 0, 0, this._width, 'left');
+    this.drawText("Harold", 100, 0, this._width, 'left');
+    this.drawActorHp($gameActors.actor(1), 240, 0, 180);
+    this.drawActorMp($gameActors.actor(1), 450, 0, 180);
+    this.drawActorTp($gameActors.actor(1), 660, 0, 180);
+    this.drawText("100%", 855, 0, 50);
+    //this.drawText("Marsha", 100, this.lineHeight(), this._width, 'left');
+    //this.drawActorHp($gameActors.actor(3), 240, this.lineHeight(), 180);
+    //this.drawActorMp($gameActors.actor(3), 450, this.lineHeight(), 180);
+    //this.drawActorTp($gameActors.actor(3), 660, this.lineHeight(), 180);
+};
+
+Window_RexLeaderStatus.prototype.drawBackground = function(x, y, width, height) {
+    this.showBackgroundDimmer();
 };
 
 //=============================================================================
@@ -245,6 +381,7 @@ Window_RexLog.prototype.constructor = Window_RexLog;
 Window_RexLog.prototype.initialize = function(x, y) {
     Window_Base.prototype.initialize.call(this);
 };
+
 
 //=============================================================================
 // End of File
