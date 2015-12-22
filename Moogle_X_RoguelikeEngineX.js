@@ -27,6 +27,7 @@ Moogle_X.REX = Moogle_X.REX || {};
  * ============================================================================
  * Actors, Classes, Weapons, Armors, and States Notetags:
  * <REX Belly Rate: x%>
+ * <REX No Belly Decrease>
  *
  * ============================================================================
  * Compatibility
@@ -58,6 +59,7 @@ Moogle_X.REX.parameters = PluginManager.parameters('Moogle_X_RoguelikeEngineX');
 //=============================================================================
 
 Game_BattlerBase.TRAIT_REX_BELLY_RATE = 114; // New trait code.
+Game_BattlerBase.TRAIT_REX_NO_BELLY_DECREASE = 115; // New trait code.
 
 //=============================================================================
 // RexLog
@@ -100,6 +102,7 @@ DataManager.isDatabaseLoaded = function() {
 
 DataManager.readNotetags_REX1 = function(group) {
   var note1 = /<(?:REX BELLY RATE):[ ](\d+)\%>/i;
+  var note2 = /<(?:REX NO BELLY DECREASE)>/i;
 
   for (var n = 1; n < group.length; n++) {
       var obj = group[n];
@@ -112,6 +115,11 @@ DataManager.readNotetags_REX1 = function(group) {
               var code = Game_BattlerBase.TRAIT_REX_BELLY_RATE;
               var bellyRate = [{"code":code,"dataId":0,"value":rate}];
               obj.traits = obj.traits.concat(bellyRate);
+          } else if (line.match(note2)) {
+              var dataId = Game_BattlerBase.TRAIT_REX_NO_BELLY_DECREASE;
+              var noHunger = [{"code":Game_BattlerBase.TRAIT_PARTY_ABILITY,
+                  "dataId":dataId,"value":0}];
+              obj.traits = obj.traits.concat(noHunger);
           }
       }
   }
@@ -281,10 +289,17 @@ Game_Party.prototype.rexBellyGain = function(value) {
 };
 
 Game_Party.prototype.rexBellyLose = function(value) {
+    if (this.rexIsNoBellyDecrease()) {
+        return;
+    }
     var lose = Math.max(value, 0);
     lose = Math.round(lose);
     this._rexBelly -= lose;
     this._rexBelly = Math.max(this._rexBelly, 0);
+};
+
+Game_Party.prototype.rexIsNoBellyDecrease = function() {
+    return this.partyAbility(Game_BattlerBase.TRAIT_REX_NO_BELLY_DECREASE);
 };
 
 //=============================================================================
