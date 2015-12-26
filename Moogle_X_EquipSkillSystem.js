@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.4 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.41 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Limit
@@ -706,6 +706,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * If you use Moogle_X_EquipSkillSystem_JpAddOn plugin, position this plugin
  * above it.
  * If you use Moogle_X_PassiveSkill plugin, position this plugin above it.
+ * If you use YEP_AutoPassiveStates, position this plugin below it.
  *
  * ============================================================================
  * Terms of Use
@@ -716,6 +717,9 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.41:
+ * - Added compatibility with YEP_AutoPassiveStates v1.05a.
+ *
  * Version 1.4:
  * - Added equip slot types functionality.
  * - Added option to hide Equip Skill menu for certain actor/class.
@@ -1397,6 +1401,34 @@ Game_Actor.prototype.eqsCheckSkillEquipped = function(skillId, switchId) {
         $gameSwitches.setValue(switchId, false);
     }
 };
+
+// Compatibility with YEP_AutoPassiveStates v1.05a.
+if (Imported.YEP_AutoPassiveStates) {
+    Game_Actor.prototype.passiveStatesRaw = function() {
+        if (this._passiveStatesRaw !== undefined) return this._passiveStatesRaw;
+        var array = Game_BattlerBase.prototype.passiveStatesRaw.call(this);
+        array = array.concat(this.getPassiveStateData(this.actor()));
+        array = array.concat(this.getPassiveStateData(this.currentClass()));
+        for (var i = 0; i < this.equips().length; ++i) {
+            var equip = this.equips()[i];
+            array = array.concat(this.getPassiveStateData(equip));
+        }
+
+        //for (var i = 0; i < this._skills.length; ++i) {
+        //    var skill = $dataSkills[this._skills[i]];
+        //    array = array.concat(this.getPassiveStateData(skill));
+        //}
+
+        var eqsSkills = this.getEqsArray();
+        for (var i = 0; i < eqsSkills.length; ++i) {
+            var skill = $dataSkills[eqsSkills[i]];
+            array = array.concat(this.getPassiveStateData(skill));
+        }
+
+        this._passiveStatesRaw = array.filter(Yanfly.Util.onlyUnique)
+        return this._passiveStatesRaw;
+    };
+}
 
 //=============================================================================
 // Game_Action
