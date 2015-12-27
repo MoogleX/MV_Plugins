@@ -1420,6 +1420,10 @@ if (Imported.YEP_AutoPassiveStates) {
         //}
 
         var eqsSkills = this.getEqsArray();
+        var eqsIgnored = this._skills.filter(function(skillId) {
+            return $dataSkills[skillId].isEqsIgnore === true;
+        });
+        eqsSkills = eqsSkills.concat(eqsIgnored);
         for (var i = 0; i < eqsSkills.length; ++i) {
             var skill = $dataSkills[eqsSkills[i]];
             array = array.concat(this.getPassiveStateData(skill));
