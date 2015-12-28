@@ -12,7 +12,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v2.05 Adds friendship mechanic between actors.
+ * @plugindesc v2.06 Adds friendship mechanic between actors.
  * @author Moogle_X
  *
  * @param Default All Leaders
@@ -213,6 +213,10 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  *
  * @param Friendship Gauge Offset Y
  * @desc Change the offset Y value of Friendship Gauge in Window Friend List. (Positive: down; Negative: up)
+ * @default 0
+ *
+ * @param Use Pretty Gauges Patch
+ * @desc Activate compatibility patch for Rocketmancer's PrettyGauges plugin? 1:Yes 0:No
  * @default 0
  *
  * @param ---Current FP Text---
@@ -479,7 +483,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  *
  * The third and the last method to increase actor's FP is by having the actor
  * as one of the active battle members. All actors in active battle party will
- * gain certain amount of FP at the end of each battle (win or not).
+ * gain certain amount of FP at the end of each battle (win only).
  * The FP amount can be changed in "Friendship Gain Each Battle" option in the
  * plugin configurations.
  *
@@ -755,6 +759,11 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 2.06:
+ * - FP Gain after battle now only occur during victory.
+ * - Added option to "activate" Pretty Gauges compatibility patch inside plugin
+ *   configuration.
+ *
  * Version 2.05:
  * - Added friendship common event feature.
  *
@@ -856,6 +865,7 @@ Moogle_X.AFS.fpLockOffsetX = Number(Moogle_X.AFS.parameters['FP Lock Icon Offset
 Moogle_X.AFS.fpLockOffsetY = Number(Moogle_X.AFS.parameters['FP Lock Icon Offset Y'] || 0);
 Moogle_X.AFS.customFpIconOffsetX = Number(Moogle_X.AFS.parameters['Custom Friend Icon Offset X'] || 0);
 Moogle_X.AFS.customFpIconOffsetY = Number(Moogle_X.AFS.parameters['Custom Friend Icon Offset Y'] || 0);
+Moogle_X.AFS.usePrettyGauges = Number(Moogle_X.AFS.parameters['Use Pretty Gauges Patch']) != 0;
 
 //=============================================================================
 // DataManager
@@ -1479,6 +1489,7 @@ Game_Party.prototype.getBattleAfsLeaders = function() {
 // BattleManager
 //=============================================================================
 
+/*
 Moogle_X.AFS.BattleManager_endBattle = BattleManager.endBattle;
 BattleManager.endBattle = function(result) {
     var list = $gameParty.getBattleAfsLeaders();
@@ -1490,6 +1501,20 @@ BattleManager.endBattle = function(result) {
         }, this);
     }
     Moogle_X.AFS.BattleManager_endBattle.call(this, result);
+};
+*/
+
+Moogle_X.AFS.BattleManager_makeRewards = BattleManager.makeRewards;
+BattleManager.makeRewards = function() {
+    Moogle_X.AFS.BattleManager_makeRewards.call(this);
+    var list = $gameParty.getBattleAfsLeaders();
+    if (list.length > 0) {
+        $gameParty.battleMembers().forEach(function(actor) {
+            for (var i = 0; i < list.length; i++) {
+                actor.gainAfs(Moogle_X.AFS.battleFp, list[i].actorId());
+            }
+        }, this);
+    }
 };
 
 })(); // IIFE
@@ -1506,7 +1531,7 @@ Scene_ActorsFriendship.prototype =
     Object.create(Scene_MenuBase.prototype);
 Scene_ActorsFriendship.prototype.constructor = Scene_ActorsFriendship;
 
-Scene_Menu.prototype.initialize = function() {
+Scene_ActorsFriendship.prototype.initialize = function() {
     Scene_MenuBase.prototype.initialize.call(this);
 };
 
@@ -1906,11 +1931,15 @@ Window_ActorsFriendship.prototype.drawCustomFpIcon = function(index) {
 };
 
 Window_ActorsFriendship.prototype.drawGauge = function(x, y, width, rate, color1, color2) {
-    var fillW = Math.floor(width * rate);
-    var gaugeY = y + this.lineHeight() - 8;
-    this.contents.fillRect(x, gaugeY, width, Moogle_X.AFS.fpGaugeHeight, this.gaugeBackColor());
-    this.contents.gradientFillRect(x, gaugeY, fillW,
-        Moogle_X.AFS.fpGaugeHeight, color1, color2);
+    if (Moogle_X.AFS.usePrettyGauges) {
+        Window_Base.prototype.drawGauge.call(this, x, y, width, rate, color1, color2);
+    } else {
+        var fillW = Math.floor(width * rate);
+        var gaugeY = y + this.lineHeight() - 8;
+        this.contents.fillRect(x, gaugeY, width, Moogle_X.AFS.fpGaugeHeight, this.gaugeBackColor());
+        this.contents.gradientFillRect(x, gaugeY, fillW,
+            Moogle_X.AFS.fpGaugeHeight, color1, color2);
+    }
 };
 
 //=============================================================================
