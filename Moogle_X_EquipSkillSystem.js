@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.41 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.42 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Limit
@@ -26,9 +26,29 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * @param ---Scene---
  * @default
  *
+ * @param Show in Skill Menu
+ * @desc Put "Equip Skill" command in skill menu. 1:Yes 0:No
+ * @default 1
+ *
+ * @param Skill Menu Switch ID
+ * @desc Turning on the in-game switch with this ID will put "Equip" command in skill menu. Put 0 to ignore this feature.
+ * @default 0
+ *
  * @param Equip Skill Command Name
  * @desc This is the "Equip" skill command name in Scene Skill.
  * @default Equip
+ *
+ * @param Show in Main Menu
+ * @desc Put "Equip Skill" scene command in main menu. 1:Yes 0:No
+ * @default 0
+ *
+ * @param Main Menu Switch ID
+ * @desc Turning on the in-game switch with this ID will put scene command in main menu. Put 0 to ignore this feature.
+ * @default 0
+ *
+ * @param Menu Vocab
+ * @desc Change the "Equip Skill" command name in main menu.
+ * @default Equip Skill
  *
  * @param Empty Slot Text
  * @desc This is the text shown when the skill slot is empty.
@@ -86,6 +106,25 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * @param Equip Cost Number Color
  * @desc This is the number color for skill equip cost.
  * @default 17
+ *
+ * @param ---Equip Sound---
+ * @default
+ *
+ * @param Equip SE Name
+ * @desc This is the sound's file name when equipping skill.
+ * @default Equip1
+ *
+ * @param Equip SE Volume
+ * @desc This will be the volume of the SE played.
+ * @default 90
+ *
+ * @param Equip SE Pitch
+ * @desc This will be the pitch of the SE played.
+ * @default 100
+ *
+ * @param Equip SE Pan
+ * @desc This will be the pan of the SE played.
+ * @default 0
  *
  * @param ---Slot Types---
  * @default
@@ -691,6 +730,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * EQS Actor x Type y Slot z Skill n
  * EQS Actor x Type y Grow n
  * EQS Actor x Limit Grow n
+ * EQS Open                    // Open "Equip Skill" scene (Main Menu version).
  *
  * SPECIAL Plugin Command!
  *
@@ -707,6 +747,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * above it.
  * If you use Moogle_X_PassiveSkill plugin, position this plugin above it.
  * If you use YEP_AutoPassiveStates, position this plugin below it.
+ * If you use Moogle_X_EquipmentLearning, position this plugin above it.
  *
  * ============================================================================
  * Terms of Use
@@ -717,6 +758,13 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.42:
+ * - Added compatibility with Moogle_X_EquipmentLearning.
+ * - Fixed <EQS Ignore> bug regarding YEP_AutoPassiveStates compatibility.
+ * - Fixed bug regarding skill type window not refreshing after equipping skill.
+ * - Added standalone EQS scene just for equipping skill.
+ * - Added option to change equip skill sound effect.
+ *
  * Version 1.41:
  * - Added compatibility with YEP_AutoPassiveStates v1.05a.
  *
@@ -753,6 +801,15 @@ Moogle_X.EQS.eqsCostText = String(Moogle_X.EQS.parameters['Equip Cost Text'] || 
 Moogle_X.EQS.eqsCostColor = Number(Moogle_X.EQS.parameters['Equip Cost Text Color'] || 0);
 Moogle_X.EQS.eqsCostNumberColor = Number(Moogle_X.EQS.parameters['Equip Cost Number Color'] || 0);
 Moogle_X.EQS.slotTypeRectWidth = Number(Moogle_X.EQS.parameters['Slot Type Name Rectangle Width'] || 120);
+Moogle_X.EQS.showEqsMenuSkill = Number(Moogle_X.EQS.parameters['Show in Skill Menu']) != 0;
+Moogle_X.EQS.eqsMenuSwitchSkill = Number(Moogle_X.EQS.parameters['Skill Menu Switch ID'] || 0);
+Moogle_X.EQS.showEqsMenu = Number(Moogle_X.EQS.parameters['Show in Main Menu']) != 0;
+Moogle_X.EQS.eqsTitle = String(Moogle_X.EQS.parameters['Menu Vocab'] || '');
+Moogle_X.EQS.eqsMenuSwitch = Number(Moogle_X.EQS.parameters['Main Menu Switch ID'] || 0);
+Moogle_X.EQS.eqSeName = String(Moogle_X.EQS.parameters['Equip SE Name'] || 'Equip1');
+Moogle_X.EQS.eqSeVolume = Number(Moogle_X.EQS.parameters['Equip SE Volume'] || 0);
+Moogle_X.EQS.eqSePitch = Number(Moogle_X.EQS.parameters['Equip SE Pitch'] || 0);
+Moogle_X.EQS.eqSePan = Number(Moogle_X.EQS.parameters['Equip SE Pan'] || 0);
 
 // Slot Types variables.
 
@@ -1286,11 +1343,16 @@ Game_Actor.prototype.canEquipSkill = function(skill) {
         return true;
     }
     if (this.canPayEqsCost(skill) && !this.eqsSkillEquipped(skill) &&
-        this.isLearnedSkill(skill.id) && !skill.isEqsIgnore) {
+        this.eqsIsLearnedSkill(skill.id) && !skill.isEqsIgnore) {
         return true;
     } else {
         return false;
     }
+};
+
+Game_Actor.prototype.eqsIsLearnedSkill = function(skillId) {
+    // A simple method made for other plugins compatibility.
+    return this.isLearnedSkill(skillId);
 };
 
 Game_Actor.prototype.canPayEqsCost = function(skill) {
@@ -1488,6 +1550,47 @@ Game_Action.prototype.applyEqsLimitGrow = function(target) {
 };
 
 //=============================================================================
+// Scene_Menu
+//=============================================================================
+
+Moogle_X.EQS.Scene_Menu_createCommandWindow =
+    Scene_Menu.prototype.createCommandWindow;
+Scene_Menu.prototype.createCommandWindow = function() {
+    Moogle_X.EQS.Scene_Menu_createCommandWindow.call(this);
+    if (Moogle_X.EQS.showEqsMenu) {
+        this._commandWindow.setHandler('equip skill', this.commandPersonal.bind(this));
+    }
+};
+
+Moogle_X.EQS.Scene_Menu_onPersonalOk = Scene_Menu.prototype.onPersonalOk;
+Scene_Menu.prototype.onPersonalOk = function() {
+    Moogle_X.EQS.Scene_Menu_onPersonalOk.call(this);
+    switch (this._commandWindow.currentSymbol()) {
+    case 'equip skill':
+        SceneManager.push(Scene_EQS);
+        break;
+    }
+};
+
+//=============================================================================
+// Window_MenuCommand
+//=============================================================================
+
+Moogle_X.EQS.Window_MenuCommand_addOriginalCommands =
+    Window_MenuCommand.prototype.addOriginalCommands;
+Window_MenuCommand.prototype.addOriginalCommands = function() {
+    Moogle_X.EQS.Window_MenuCommand_addOriginalCommands.call(this);
+    if (Moogle_X.EQS.showEqsMenu) {
+        if (Moogle_X.EQS.eqsMenuSwitch === 0) {
+            this.addCommand(Moogle_X.EQS.eqsTitle, 'equip skill', true);
+        } else if (Moogle_X.EQS.eqsMenuSwitch > 0 &&
+            $gameSwitches.value(Moogle_X.EQS.eqsMenuSwitch)) {
+            this.addCommand(Moogle_X.EQS.eqsTitle, 'equip skill', true);
+        }
+    }
+};
+
+//=============================================================================
 // Scene_Skill
 //=============================================================================
 
@@ -1589,10 +1692,12 @@ Scene_Skill.prototype.onEqsSlotCancel = function() {
 };
 
 Scene_Skill.prototype.onEqsItemOk = function() {
-    SoundManager.playEquip();
+    AudioManager.playStaticSe(this._eqsPoolWindow._equipSound);
     this.actor().eqsEquipSkill(this._eqsPoolWindow.item(),
         this._eqsSlotWindow.item(this._eqsSlotWindow.index()).typeId,
         this._eqsSlotWindow.item(this._eqsSlotWindow.index()).slotId);
+    this._skillTypeWindow.refresh(); // Add skill type bug fix.
+    this._skillTypeWindow.selectSymbol('eqsEquip');
     this._eqsSlotWindow.activate();
     this._eqsSlotWindow.refresh();
     this._eqsPoolWindow.deselect();
@@ -1616,9 +1721,18 @@ Moogle_X.EQS.Window_SkillType_makeCommandList =
 Window_SkillType.prototype.makeCommandList = function() {
     Moogle_X.EQS.Window_SkillType_makeCommandList.call(this);
     if (this._actor) {
-        if (!this._actor.isEqsHide()) {
+        if (!this._actor.isEqsHide() && this.eqsShowCommand()) {
             this.addCommand(Moogle_X.EQS.eqsVocab, 'eqsEquip', true);
         }
+    }
+};
+
+Window_SkillType.prototype.eqsShowCommand = function() {
+    if (Moogle_X.EQS.showEqsMenuSkill) {
+        if (Moogle_X.EQS.eqsMenuSwitchSkill === 0) return true;
+        return $gameSwitches.value(Moogle_X.EQS.eqsMenuSwitchSkill);
+    } else {
+        return false;
     }
 };
 
@@ -1793,6 +1907,7 @@ Window_EquipSkillPool.prototype.constructor = Window_EquipSkillPool;
 
 Window_EquipSkillPool.prototype.initialize = function(x, y, width, height) {
     Window_Selectable.prototype.initialize.call(this, x, y, width, height);
+    this.defineEquipSound();
     this._actor = null;
     this._data = [];
     this._typeId = null;
@@ -1892,6 +2007,15 @@ Window_EquipSkillPool.prototype.setTypeId = function(typeId) {
     this.refresh();
 };
 
+Window_EquipSkillPool.prototype.defineEquipSound = function() {
+    this._equipSound = {
+        name:   Moogle_X.EQS.eqSeName,
+        volume: Moogle_X.EQS.eqSeVolume,
+        pitch:  Moogle_X.EQS.eqSePitch,
+        pan:    Moogle_X.EQS.eqSePan
+    };
+};
+
 //=============================================================================
 // Window_EqsLimit
 //=============================================================================
@@ -1981,6 +2105,264 @@ Window_EqsCost.prototype.drawEqsCostText = function() {
     }
 };
 
+//=============================================================================
+// Scene_EQS
+//=============================================================================
+
+function Scene_EQS() {
+    this.initialize.apply(this, arguments);
+}
+
+Scene_EQS.prototype = Object.create(Scene_Skill.prototype);
+Scene_EQS.prototype.constructor = Scene_EQS;
+
+Scene_EQS.prototype.initialize = function() {
+    Scene_Skill.prototype.initialize.call(this);
+};
+
+Scene_EQS.prototype.start = function() {
+    Scene_Skill.prototype.start.call(this);
+};
+
+Scene_EQS.prototype.create = function() {
+    Scene_ItemBase.prototype.create.call(this);
+    this.createHelpWindow();
+    this.createStatusWindow();
+    this.createEquipLimitWindow();
+    this.createEquipCostWindow();
+    this.createEquipSkillWindow();
+    this.createEquipSkillPool();
+    this.refreshActor();
+};
+
+Scene_EQS.prototype.createStatusWindow = function() {
+    var wx = 0;
+    var wy = this._helpWindow.height;
+    var ww = Graphics.boxWidth - wx;
+    var wh = this._helpWindow.fittingHeight(4);
+    this._statusWindow = new Window_EqsSkillStatus(wx, wy, ww, wh);
+    this.addWindow(this._statusWindow);
+};
+
+Scene_EQS.prototype.onActorChange = function() {
+    this.refreshActor();
+    this._eqsSlotWindow.activate();
+};
+
+Scene_EQS.prototype.createEquipLimitWindow = function() {
+    var wy = this._statusWindow.y + this._statusWindow.height;
+    var ww = Graphics.boxWidth / 2;
+    var wh = this._statusWindow.lineHeight() +
+        this._statusWindow.padding * 2;
+    this._eqsLimitWindow = new Window_EqsLimit(0, wy, ww, wh);
+    this.addWindow(this._eqsLimitWindow);
+};
+
+Scene_EQS.prototype.createEquipCostWindow = function() {
+    var wy = this._statusWindow.y + this._statusWindow.height;
+    var ww = Graphics.boxWidth / 2;
+    var wh = this._statusWindow.lineHeight() +
+        this._statusWindow.padding * 2;
+    this._eqsCostWindow = new Window_EqsCost(ww, wy, ww, wh);
+    this.addWindow(this._eqsCostWindow);
+};
+
+Scene_EQS.prototype.createEquipSkillWindow = function() {
+    var wy = this._eqsLimitWindow.y + this._eqsLimitWindow.height;
+    var ww = Graphics.boxWidth / 2;
+    var wh = Graphics.boxHeight - wy;
+    this._eqsSlotWindow = new Window_EquipSkillSlot(0, wy, ww, wh);
+    this._eqsSlotWindow.setHelpWindow(this._helpWindow);
+    this._eqsSlotWindow.setHandler('ok',     this.onEqsSlotOk.bind(this));
+    this._eqsSlotWindow.setHandler('cancel', this.onEqsSlotCancel.bind(this));
+    this._eqsSlotWindow.setHandler('pagedown', this.nextActor.bind(this));
+    this._eqsSlotWindow.setHandler('pageup',   this.previousActor.bind(this));
+    this.addWindow(this._eqsSlotWindow);
+};
+
+Scene_EQS.prototype.createEquipSkillPool = function() {
+    var wy = this._eqsCostWindow.y + this._eqsCostWindow.height;
+    var ww = Graphics.boxWidth / 2;
+    var wh = Graphics.boxHeight - wy;
+    this._eqsPoolWindow = new Window_EquipSkillPool(ww, wy, ww, wh);
+    this._eqsPoolWindow.setHelpWindow(this._helpWindow);
+    this._eqsPoolWindow.setHandler('ok',     this.onEqsItemOk.bind(this));
+    this._eqsPoolWindow.setHandler('cancel', this.onEqsItemCancel.bind(this));
+    this._eqsSlotWindow.setItemWindow(this._eqsPoolWindow);
+    this.addWindow(this._eqsPoolWindow);
+    this._eqsSlotWindow.activate();
+    this._eqsSlotWindow.select(0);
+};
+
+Scene_EQS.prototype.refreshActor = function() {
+    var actor = this.actor();
+    if (this._statusWindow) {
+        this._statusWindow.setActor(actor);
+    }
+    if (this._eqsSlotWindow) {
+        this._eqsSlotWindow.setActor(actor);
+    }
+    if (this._eqsPoolWindow) {
+        this._eqsPoolWindow.setActor(actor);
+    }
+    if (this._eqsLimitWindow) {
+        this._eqsLimitWindow.setActor(actor);
+    }
+    if (this._eqsCostWindow) {
+        this._eqsCostWindow.setActor(actor);
+    }
+};
+
+Scene_EQS.prototype.onActorChange = function() {
+    this.refreshActor();
+    this._eqsSlotWindow.activate();
+    this._eqsSlotWindow.select(0);
+};
+
+Scene_EQS.prototype.onEqsSlotOk = function() {
+    this._eqsPoolWindow.activate();
+    this._eqsPoolWindow.select(0);
+};
+
+Scene_EQS.prototype.onEqsSlotCancel = function() {
+    this.popScene();
+};
+
+Scene_EQS.prototype.onEqsItemOk = function() {
+    AudioManager.playStaticSe(this._eqsPoolWindow._equipSound);
+    this.actor().eqsEquipSkill(this._eqsPoolWindow.item(),
+        this._eqsSlotWindow.item(this._eqsSlotWindow.index()).typeId,
+        this._eqsSlotWindow.item(this._eqsSlotWindow.index()).slotId);
+    //this._skillTypeWindow.refresh(); // Add skill type bug fix.
+    //this._skillTypeWindow.selectSymbol('eqsEquip');
+    this._eqsSlotWindow.activate();
+    this._eqsSlotWindow.refresh();
+    this._eqsPoolWindow.deselect();
+    this._eqsPoolWindow.refresh();
+    this._eqsLimitWindow.refresh();
+    this._statusWindow.refresh();
+    this._eqsSlotWindow.updateHelp();
+};
+
+Scene_EQS.prototype.onEqsItemCancel = function() {
+    this._eqsSlotWindow.activate();
+    this._eqsPoolWindow.deselect();
+};
+
+//=============================================================================
+// Window_EqsSkillStatus
+//=============================================================================
+function Window_EqsSkillStatus() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_EqsSkillStatus.prototype = Object.create(Window_Base.prototype);
+Window_EqsSkillStatus.prototype.constructor = Window_EqsSkillStatus;
+
+Window_EqsSkillStatus.prototype.initialize = function(x, y, width, height) {
+    Window_Base.prototype.initialize.call(this, x, y, width, height);
+    this._actor = null;
+};
+
+Window_EqsSkillStatus.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+
+Window_EqsSkillStatus.prototype.refresh = function() {
+    this.contents.clear();
+    if (!this._actor) return;
+
+    if (Imported.YEP_CoreEngine) {
+        var w = Math.round(this.width / 1.8) - this.padding * 2;
+        var h = this.height - this.padding * 2;
+        if (!eval(Yanfly.Param.MenuTpGauge)) {
+            var y = h / 2 - this.lineHeight() * 1.5;
+        } else {
+            var y = 0;
+        }
+        var xpad = Yanfly.Param.WindowPadding + Window_Base._faceWidth;
+        var width = w - xpad - this.textPadding();
+        this.drawActorFace(this._actor, 0, 0, Window_Base._faceWidth, h);
+        this.drawActorSimpleStatus(this._actor, xpad, y, width);
+        var x2 = Math.round(this.width / 1.8) - this.padding * 2;
+        var width2 = this.width - x2 - this.padding * 2;
+        this.eqsDrawParameters(this._actor, x2, 0, width2);
+
+    } else {
+        var w = this.width - this.padding * 2;
+        var h = this.height - this.padding * 2;
+        var y = h / 2 - this.lineHeight() * 1.5;
+        var width = this.width;
+        this.drawActorFace(this._actor, 0, 0, 144, h);
+        this.drawActorSimpleStatus(this._actor, 162, y, width);
+    }
+
+};
+
+Window_EqsSkillStatus.prototype.eqsDrawParameters = function(actor, x, y, width) {
+    var rect = new Rectangle(x, y, width, this.lineHeight());
+    var dx = rect.x;
+    var dy = rect.y + this.lineHeight();
+    var dw = rect.width;
+    var dh = rect.height;
+    var dx2 = dx + this.textPadding();
+    var textDw = dw / 2 - this.textPadding() * 2;
+
+    // Attack
+    this.drawDarkRect(dx, dy, dw / 2, dh);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(2), dx2, dy, textDw, 'left');
+    this.changeTextColor(this.normalColor());
+    this.drawText(Yanfly.Util.toGroup(actor.param(2)), dx2, dy, textDw, 'right');
+
+    // Defense
+    this.drawDarkRect(dx + dw / 2, dy, dw / 2, dh);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(3), dx2 + dw / 2, dy, textDw, 'left');
+    this.changeTextColor(this.normalColor());
+    this.drawText(Yanfly.Util.toGroup(actor.param(3)), dx2 + dw / 2, dy, textDw, 'right');
+
+    // Magic
+    this.drawDarkRect(dx, dy + dh, dw / 2, dh);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(4), dx2, dy + dh, textDw, 'left');
+    this.changeTextColor(this.normalColor());
+    this.drawText(Yanfly.Util.toGroup(actor.param(4)), dx2, dy + dh, textDw, 'right');
+
+    // Magic Defense
+    this.drawDarkRect(dx + dw / 2, dy + dh, dw / 2, dh);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(5), dx2 + dw / 2, dy + dh, textDw, 'left');
+    this.changeTextColor(this.normalColor());
+    this.drawText(Yanfly.Util.toGroup(actor.param(5)), dx2 + dw / 2, dy + dh, textDw, 'right');
+
+    // Agility
+    this.drawDarkRect(dx, dy + dh * 2, dw / 2, dh);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(6), dx2, dy + dh * 2, textDw, 'left');
+    this.changeTextColor(this.normalColor());
+    this.drawText(Yanfly.Util.toGroup(actor.param(6)), dx2, dy + dh * 2, textDw, 'right');
+
+    // Luck
+    this.drawDarkRect(dx + dw / 2, dy + dh * 2, dw / 2, dh);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(7), dx2 + dw / 2, dy + dh * 2, textDw, 'left');
+    this.changeTextColor(this.normalColor());
+    this.drawText(Yanfly.Util.toGroup(actor.param(7)), dx2 + dw / 2, dy + dh * 2, textDw, 'right');
+
+    this.resetFontSettings();
+};
+
+Window_EqsSkillStatus.prototype.drawDarkRect = function(dx, dy, dw, dh) {
+    var color = this.gaugeBackColor();
+    this.changePaintOpacity(false);
+    this.contents.fillRect(dx + 1, dy + 1, dw - 2, dh - 2, color);
+    this.changePaintOpacity(true);
+};
+
 (function() { // IIFE
 
 //=============================================================================
@@ -1992,6 +2374,10 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
     _Game_Interpreter_pluginCommand.call(this, command, args);
     if (command === 'EQS') {
         switch (args[0]) {
+        case 'Open':
+            SceneManager.push(Scene_EQS);
+            break;
+
         case 'Actor':
             if (args[2] === "Type" && args[4] === "Slot" && args[6] === "Skill") {
                 $gameActors.actor(args[1]).eqsEquipSkill($dataSkills[args[7]],
