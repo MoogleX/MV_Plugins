@@ -12,7 +12,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v2.06 Adds friendship mechanic between actors.
+ * @plugindesc v2.07 Adds friendship mechanic between actors.
  * @author Moogle_X
  *
  * @param Default All Leaders
@@ -670,13 +670,6 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * When this actor's Friendship Level towards Leader 3 is increased (level up)
  * to level 5. Commmon event with ID number 10 will be executed automatically.
  *
- * IMPORTANT!
- * Only 1 common event can be run at each level.
- * Also, if the actor's Friendship Level is level up multiple times at once
- * (because of big FP gain for example), only the LAST triggered common event
- * will be run. This is not the plugin's bug! This is simply how the default
- * engine work.
- *
  * ============================================================================
  * Notetags List
  * ============================================================================
@@ -759,6 +752,9 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 2.07:
+ * - Fixed multiple friendship common events bug (common events not stacking).
+ *
  * Version 2.06:
  * - FP Gain after battle now only occur during victory.
  * - Added option to "activate" Pretty Gauges compatibility patch inside plugin
@@ -992,6 +988,40 @@ DataManager.readNotetags_AFS2 = function(group) {
             }
         }
   	}
+};
+
+//=============================================================================
+// SceneManager
+//=============================================================================
+
+Moogle_X.AFS.SceneManager_updateScene = SceneManager.updateScene;
+SceneManager.updateScene = function() {
+    Moogle_X.AFS.SceneManager_updateScene.call(this);
+    if (this._scene) {
+        if (this.isCurrentSceneStarted()) {
+            $gameTemp.afsCeUpdate();
+        }
+    }
+};
+
+//=============================================================================
+// Game_Temp
+//=============================================================================
+
+Moogle_X.AFS.Game_Temp_initialize = Game_Temp.prototype.initialize;
+Game_Temp.prototype.initialize = function() {
+    Moogle_X.AFS.Game_Temp_initialize.call(this);
+    this._afsCommonEvent = [];
+};
+
+Game_Temp.prototype.afsCeUpdate = function() {
+    if (!this.isCommonEventReserved() && this._afsCommonEvent.length > 0) {
+        this.reserveCommonEvent(this._afsCommonEvent.shift());
+    }
+};
+
+Game_Temp.prototype.afsReserveCommonEvent = function(commonEventId) {
+    this._afsCommonEvent.push(commonEventId);
 };
 
 //=============================================================================
@@ -1408,7 +1438,7 @@ Game_Actor.prototype.afsGetBestLevelFriend = function(varId) {
 Game_Actor.prototype.afsRunCommonEvent = function(leaderId, level) {
     if (this.actor().afsCommonEvents[leaderId]) {
         if (this.actor().afsCommonEvents[leaderId][level]) {
-            $gameTemp.reserveCommonEvent(this.actor().afsCommonEvents[leaderId][level]);
+            $gameTemp.afsReserveCommonEvent(this.actor().afsCommonEvents[leaderId][level]);
         }
     }
 };
