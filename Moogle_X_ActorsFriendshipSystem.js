@@ -999,7 +999,9 @@ SceneManager.updateScene = function() {
     Moogle_X.AFS.SceneManager_updateScene.call(this);
     if (this._scene) {
         if (this.isCurrentSceneStarted()) {
-            $gameTemp.afsCeUpdate();
+            if ($gameTemp) {
+                $gameTemp.afsCeUpdate();
+            }
         }
     }
 };
