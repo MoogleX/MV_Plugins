@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.42 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.43 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Limit
@@ -702,6 +702,60 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * skills.
  *
  * ============================================================================
+ * Unequipping Skill(s) Using Plugin Commands
+ * ============================================================================
+ * You can use plugin command to unequip some skills from certain actor.
+ * If you want to simply unequip every skills in actor's skill slots, simply
+ * use this plugin command:
+ *
+ * EQS Actor x Unequip All              // Unequip all skills in actor x's
+ *                                      // Skill Slots.
+ * Example:
+ * EQS Actor 6 Unequip All              // Remove all skills in Actor 6's Skill
+ *                                      // Slots.
+ *
+ * On the other hand, if you want to unequip skill from specific slot, you need
+ * to use this plugin command instead:
+ *
+ * EQS Actor x Type y Slot z Unequip    // Unequip skill from Actor x's Slot
+ *                                      // number z of Slot Type y.
+ *
+ * Example:
+ * EQS Actor 6 Type 14 Slot 2 Unequip   // Actor 6 will unequip any skill in
+ *                                      // his/her second (2nd) Skill Slot of
+ *                                      // Slot Type 14.
+ *
+ * ============================================================================
+ * NEW Feature! "EQS Block"
+ * ============================================================================
+ * Let's say you want prevent the actor to equip skill A whenever they have
+ * skill B already equipped inside their Skill Slots.
+ *
+ * For example skill "Fire" (ID: 10) and skill "Blizzard" (ID: 20).
+ * Let's say you don't want the actor to be able to equip both of these at the
+ * same time.
+ *
+ * All you need to do is simply insert this notetag inside both "Fire" and
+ * "Blizzard" noteboxes:
+ *
+ * <EQS Block: x>               // Actors cannot equip skill x whenever they
+ *                              // have this skill already equipped.
+ *
+ * In this case, you put <EQS Block: 20> inside "Fire" notebox. And then, you
+ * put <EQS Block: 10> inside "Blizzard" notebox.
+ *
+ * If you want to block multiple skills at the same time, simply use this
+ * notetag instead:
+ *
+ * <EQS Block: x, y, z>         // Actors cannot equip skills x, y, z whenever
+ *                              // they have this skill already equipped.
+ *
+ * Example:
+ * <EQS Block: 5, 7, 8, 36, 90> // Actors cannot equip skills 5, 7, 8, 36, 90
+ *                              // whenever they have this skill already
+ *                              // equipped in one of their Skill Slots.
+ *
+ * ============================================================================
  * Notetags and Plugin Commands List
  * ============================================================================
  * Actors Notetags:
@@ -718,6 +772,8 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * <EQS Cost: x>
  * <EQS Type: x>
  * <EQS Ignore>
+ * <EQS Block: x>
+ * <EQS Block: x, y, z>
  *
  * Items and Skills Notetags:
  * <EQS Slot Grow x: y>
@@ -728,6 +784,8 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  *
  * Plugin Commands:
  * EQS Actor x Type y Slot z Skill n
+ * EQS Actor x Type y Slot z Unequip
+ * EQS Actor x Unequip All
  * EQS Actor x Type y Grow n
  * EQS Actor x Limit Grow n
  * EQS Open                    // Open "Equip Skill" scene (Main Menu version).
@@ -758,6 +816,10 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.43:
+ * - Added "blocked skills" feature.
+ * - Added new plugin commands for unequipping skill(s).
+ *
  * Version 1.42:
  * - Added compatibility with Moogle_X_EquipmentLearning.
  * - Fixed <EQS Ignore> bug regarding YEP_AutoPassiveStates compatibility.
@@ -1126,6 +1188,7 @@ DataManager.readNotetags_EQS3 = function(group) {
     var note1 = /<(?:EQS COST):[ ](\d+)>/i;
     var note2 = /<(?:EQS IGNORE)>/i;
     var note3 = /<(?:EQS TYPE):[ ](\d+)>/i;
+    var note4 = /<(?:EQS BLOCK):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
@@ -1134,6 +1197,7 @@ DataManager.readNotetags_EQS3 = function(group) {
         obj.eqsCost = Moogle_X.EQS.defEquipCost;
         obj.isEqsIgnore = false;
         obj.eqsType = 0;
+        obj.eqsBlock = [];
 
 		    for (var i = 0; i < notedata.length; i++) {
 			      var line = notedata[i];
@@ -1145,6 +1209,9 @@ DataManager.readNotetags_EQS3 = function(group) {
             } else if (line.match(note3)) {
                 var type = Number(RegExp.$1);
                 obj.eqsType = type;
+            } else if (line.match(note4)) {
+                var block = JSON.parse('[' + RegExp.$1.match(/\d+/g) + ']');
+                obj.eqsBlock = block;
             }
 		    }
 	  }
@@ -1338,6 +1405,19 @@ Game_Actor.prototype.eqsEquipSkill = function(skill, typeId, slotId) {
     this.refresh();
 };
 
+// Plugin Command "EQS Actor x Type y Slot z Skill n"
+Game_Actor.prototype.eqsEquipSkillPluginCommand = function(skill, typeId, slotId) {
+    if (!this.canEquipSkill(skill) || this.eqsIsBlocked(skill)) return;
+    if (this._eqsSlots[typeId][slotId] !== undefined) {
+        if (skill === null) {
+            this._eqsSlots[typeId][slotId] = 0;
+        } else {
+            this._eqsSlots[typeId][slotId] = skill.id;
+        }
+    }
+    this.refresh();
+};
+
 Game_Actor.prototype.canEquipSkill = function(skill) {
     if (skill === null) {
         return true;
@@ -1462,6 +1542,24 @@ Game_Actor.prototype.eqsCheckSkillEquipped = function(skillId, switchId) {
     } else {
         $gameSwitches.setValue(switchId, false);
     }
+};
+
+Game_Actor.prototype.getEqsBlock = function() {
+    var list = this.getEqsArray();
+    var block = [];
+    list.forEach(function(skillId) {
+        if ($dataSkills[skillId]) {
+            if ($dataSkills[skillId].eqsBlock) {
+                block = block.concat($dataSkills[skillId].eqsBlock);
+            }
+        }
+    });
+    return block;
+};
+
+Game_Actor.prototype.eqsIsBlocked = function(skill) {
+    if (!skill) return false;
+    return this.getEqsBlock().contains(skill.id);
 };
 
 // Compatibility with YEP_AutoPassiveStates v1.05a.
@@ -1943,7 +2041,8 @@ Window_EquipSkillPool.prototype.includes = function(item) {
 };
 
 Window_EquipSkillPool.prototype.isEnabled = function(item) {
-    return this._actor && this._actor.canEquipSkill(item);
+    return this._actor && this._actor.canEquipSkill(item) &&
+        !this._actor.eqsIsBlocked(item);
 };
 
 Window_EquipSkillPool.prototype.makeItemList = function() {
@@ -2380,12 +2479,18 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 
         case 'Actor':
             if (args[2] === "Type" && args[4] === "Slot" && args[6] === "Skill") {
-                $gameActors.actor(args[1]).eqsEquipSkill($dataSkills[args[7]],
+                $gameActors.actor(args[1]).eqsEquipSkillPluginCommand($dataSkills[args[7]],
                     Number(args[3]), Number(args[5]));
             } else if (args[2] === "Type" && args[4] === "Grow") {
                 $gameActors.actor(args[1]).addEqsSlots(Number(args[5]), Number(args[3]));
             } else if (args[2] === "Limit" && args[3] === "Grow") {
                 $gameActors.actor(args[1]).addEqsLimit(Number(args[4]));
+            } else if (args[2] === "Type" && args[4] === "Slot" && args[6] === "Unequip") {
+                $gameActors.actor(args[1]).eqsEquipSkill($dataSkills[0],
+                    Number(args[3]), Number(args[5]));
+            } else if (args[2] === "Unequip" && args[3] === "All") {
+                $gameActors.actor(args[1]).clearEqsSlots();
+                $gameActors.actor(args[1]).refresh();
             }
             break;
 
