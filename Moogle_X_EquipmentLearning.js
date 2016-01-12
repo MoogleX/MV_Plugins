@@ -12,11 +12,15 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0 Allows actors to learn skill from equipment.
+ * @plugindesc v1.1 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
  * @desc Actor can use equipment's skills instantly when equipped? 1:Yes 0:No
+ * @default 1
+ *
+ * @param All Skills Learnable
+ * @desc Actor can learn all skills from equipment by default? 1:Yes 0:No
  * @default 1
  *
  * @param AP Text
@@ -62,6 +66,14 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * @param No Ability Text Alignment
  * @desc This is the text alignment for "- None -" in Window Ability List. (left center right)
  * @default left
+ *
+ * @param Skill's Font Name
+ * @desc This is the font name for skills in Window Ability List.
+ * @default GameFont
+ *
+ * @param Skill's Font Size
+ * @desc This is the font size for skills in Window Ability List.
+ * @default 28
  *
  * @param AP Text Color
  * @desc This is the text color for "AP" in Window Ability List.
@@ -211,10 +223,69 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * Multiple of this trait will stack. Please use this new trait wisely.
  *
  * ============================================================================
+ * Actors and Classes Skills Learning Restriction
+ * ============================================================================
+ * By default, all actors can learn every skills inside their equipment.
+ * You can apply limitation on which skills any actors/classes can learn from
+ * their equipment.
+ *
+ * First, you MUST turn off "All Skills Learnable" parameter in the plugin
+ * configurations (just insert "0").
+ *
+ * Next, insert this notetag into actors and/or classes noteboxes:
+ *
+ * <EQL Learn Skills: x, y, z>        // This actor/class can learn skill x, y,
+ *                                    // and z from equipment.
+ *
+ * Example:
+ * <EQL Learn Skills: 23, 24, 50, 68> // This actor/class can learn skill with
+ *                                    // id 23, 24, 50, and 68 from equipment.
+ *
+ * ============================================================================
+ * Miscellaneous - <EQL No Aftermath> Skills Notetag
+ * ============================================================================
+ * Inserting <EQL No Aftermath> notetag inside skill's notebox will prevent
+ * that skill to "show up" in Victory Aftermath and default battle victory
+ * "new skills announcement".
+ *
+ * Use this notetag as you see fit.
+ *
+ * ============================================================================
+ * Miscellaneous - <EQL Show Switch: x> Skills Notetag
+ * ============================================================================
+ * You can bind the "visibility" of certain skill in Window Ability List with
+ * an in-game switch.
+ *
+ * For example, skill "Heal" that contains notetag <EQL Show Switch: 2> will
+ * be hidden/disappear in Window Ability List whenever in-game switch 2 is OFF.
+ * Skill "Heal" will reappear again in the Window when switch 2 is ON.
+ *
+ * ============================================================================
+ * Miscellaneous - <EQL AP Gain Eval> Skills Notetag
+ * ============================================================================
+ * Another miscellaneous feature. You can assign any custom effects to occur
+ * whenever an actor gain AP in specific skill.
+ *
+ * Just insert these notetags inside the skill's notebox:
+ *
+ * <EQL AP Gain Eval>
+ *
+ * // Insert your code here...
+ *
+ * </EQL AP Gain Eval>
+ *
+ * Tips: "this" will refer to the actor who gain the AP.
+ * (I'm not responsible for any destruction these notetags cause to your
+ * project. Use them at your own risk.)
+ *
+ * ============================================================================
  * Notetags and Plugin Commands List
  * ============================================================================
  * Actors Notetag:
  * <EQL Starting AP x: y>
+ *
+ * Actors and Classes Notetags:
+ * <EQL Learn Skills: x, y, z>
  *
  * Weapons and Armors Notetags:
  * <EQL Skill: n>
@@ -222,6 +293,10 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  *
  * Skills Notetag:
  * <EQL AP: x>
+ * <EQL No Aftermath>
+ * <EQL Show Switch: x>
+ * <EQL AP Gain Eval>
+ * </EQL AP Gain Eval>
  *
  * Enemies Notetag:
  * <EQL AP: x>
@@ -260,6 +335,13 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.1:
+ * - Added option to change skill's font name and size in Window Ability List.
+ * - Added actors and classes skills learning restriction.
+ * - Added <EQL No Aftermath> skills notetag.
+ * - Added <EQL Show Switch: x> skills notetag.
+ * - Added <EQL AP Gain Eval> skills notetag.
+ *
  * Version 1.0:
  * - Completed plugin.
  *
@@ -294,6 +376,9 @@ Moogle_X.EQL.apColor1 = Number(Moogle_X.EQL.parameters['AP Gauge Color 1'] || '1
 Moogle_X.EQL.apColor2 = Number(Moogle_X.EQL.parameters['AP Gauge Color 2'] || '14');
 Moogle_X.EQL.apOffsetX = Number(Moogle_X.EQL.parameters['AP Gauge Offset X'] || '0');
 Moogle_X.EQL.masteryIcon = Number(Moogle_X.EQL.parameters['Mastery Icon'] || '0');
+Moogle_X.EQL.sklFontName = String(Moogle_X.EQL.parameters["Skill's Font Name"] || 'GameFont');
+Moogle_X.EQL.sklFontSize = Number(Moogle_X.EQL.parameters["Skill's Font Size"] || 28);
+Moogle_X.EQL.allSklLearn = Number(Moogle_X.EQL.parameters['All Skills Learnable']) != 0;
 
 //=============================================================================
 // Moogle_X - Window Horizontal Arrows (START)
@@ -551,6 +636,8 @@ DataManager.isDatabaseLoaded = function() {
         DataManager.readNotetags_EQL5($dataWeapons);
         DataManager.readNotetags_EQL5($dataArmors);
         DataManager.readNotetags_EQL5($dataStates);
+        DataManager.readNotetags_EQL6($dataActors);
+        DataManager.readNotetags_EQL6($dataClasses);
         Moogle_X.EQL.DatabaseLoaded = true;
     }
 		return true;
@@ -596,19 +683,37 @@ DataManager.readNotetags_EQL2 = function(group) {
 };
 
 DataManager.readNotetags_EQL3 = function(group) {
-    var note = /<(?:EQL AP):[ ](\d+)>/i;
+    var note1 = /<(?:EQL AP):[ ](\d+)>/i;
+    var note2 = /<(?:EQL NO AFTERMATH)>/i;
+    var note3 = /<(?:EQL SHOW SWITCH):[ ](\d+)>/i;
+    var note4a = /<(?:EQL AP GAIN EVAL)>/i;
+    var note4b = /<\/(?:EQL AP GAIN EVAL)>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
 		    var notedata = obj.note.split(/[\r\n]+/);
 
         obj.eqlAp = Moogle_X.EQL.defApReq;
+        obj.eqlNoAft = false;
+        obj.eqlShowSwitch = 0;
+        obj.eqlApGainEval = '';
+        var evalMode = 'none';
 
 		    for (var i = 0; i < notedata.length; i++) {
 			      var line = notedata[i];
-			      if (line.match(note)) {
+			      if (line.match(note1)) {
                 var apNeeded  = Number(RegExp.$1);
                 obj.eqlAp = apNeeded;
+            } else if (line.match(note2)) {
+                obj.eqlNoAft = true;
+            } else if (line.match(note3)) {
+                obj.eqlShowSwitch = Number(RegExp.$1);
+            } else if (line.match(note4a)) {
+                evalMode = 'ap gain eval';
+            } else if (line.match(note4b)) {
+                evalMode = 'none';
+            } else if (evalMode === 'ap gain eval') {
+                obj.eqlApGainEval = obj.eqlApGainEval + line + '\n';
             }
 		    }
 	  }
@@ -651,6 +756,26 @@ DataManager.readNotetags_EQL5 = function(group) {
 		    }
 	  }
 };
+
+DataManager.readNotetags_EQL6 = function(group) {
+    var note = /<(?:EQL LEARN SKILLS):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
+
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
+
+        obj.eqlLearnSkills = [];
+
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note)) {
+                var list = JSON.parse('[' + RegExp.$1.match(/\d+/g) + ']');
+                obj.eqlLearnSkills = list;
+            }
+		    }
+	  }
+};
+
 
 //=============================================================================
 // Game_BattlerBase
@@ -703,7 +828,7 @@ Game_Actor.prototype.eqlCheckMastery = function(skillId) {
 
     if ($gameParty.inBattle()) {
         if (this.isLearnedSkill(skillId) && !checkSkillPrev) {
-            if (!this._eqlNewSkill.contains(skillId)) {
+            if (!this._eqlNewSkill.contains(skillId) && !$dataSkills[skillId].eqlNoAft) {
                 this._eqlNewSkill.push(skillId);
             }
         }
@@ -720,8 +845,15 @@ Game_Actor.prototype.eqlGainAp = function(value) {
         if (eq) {
             eq.eqlSkill.forEach(function(skillId) {
                 if (!this._eqlAp[skillId]) this._eqlAp[skillId] = 0;
-                this._eqlAp[skillId] += total;
-                this.eqlCheckMastery(skillId);
+
+                // Danger Zone (START)
+                if (!this.eqlCantLearnSkill($dataSkills[skillId])) {
+                    this._eqlAp[skillId] += total; // Original code.
+                    this.eqlCheckMastery(skillId); // Original code.
+                    eval($dataSkills[skillId].eqlApGainEval);
+                }
+                // Danger Zone (END)
+
             }, this);
         }
     }, this);
@@ -786,6 +918,21 @@ Game_Actor.prototype.getEqlObjects = function() {
 Game_Actor.prototype.eqlApRate = function(skill) {
     if (this.eqlIsMastered(skill.id)) return 1;
     return this._eqlAp[skill.id] / skill.eqlAp;
+};
+
+Game_Actor.prototype.eqlCantLearnSkill = function(skill) {
+    if (Moogle_X.EQL.allSklLearn) return false;
+    if (!skill) return false;
+    if (this.actor().eqlLearnSkills) {
+        if (!this.actor().eqlLearnSkills.contains(skill.id)) var actorCant = true;
+    }
+    if (this.currentClass().eqlLearnSkills) {
+        if (!this.currentClass().eqlLearnSkills.contains(skill.id)) var classCant = true;
+    }
+    if (actorCant && classCant) {
+        return true;
+    }
+    return false;
 };
 
 // Compatibility with Moogle_X_EquipSkillSystem.
@@ -1424,7 +1571,19 @@ Window_ShopStatus.prototype.drawActorStatInfo = function(actor) {
     if (this._actorIndex === this._eqlIndex) {
         var y = this.lineHeight() * 2;
         var w = this.contents.width;
-        if (this._item.eqlSkill && this._item.eqlSkill.length > 0) {
+
+        var skillList = this._item.eqlSkill;
+        if (skillList) {
+            skillList = skillList.filter(function(id) {
+                if ($dataSkills[id] && $dataSkills[id].eqlShowSwitch > 0) {
+                    return $gameSwitches.value($dataSkills[id].eqlShowSwitch);
+                } else {
+                    return true;
+                }
+            });
+        }
+
+        if (skillList && skillList.length > 0) {
             this.eqlDrawAbilityList(this._item, 0, y, w);
         } else {
             this.eqlDrawNoAbility(0, y, w);
@@ -1438,12 +1597,27 @@ Window_ShopStatus.prototype.eqlDrawAbilityList = function(item, x, y, w) {
     var iconWidth = Window_Base._iconWidth + 4;
     this.changeTextColor(this.normalColor());
     this.changePaintOpacity(true);
-    for (var i = 0; i < item.eqlSkill.length; i++) {
+
+    var skillList = item.eqlSkill;
+    if (skillList) {
+        skillList = skillList.filter(function(id) {
+            if ($dataSkills[id] && $dataSkills[id].eqlShowSwitch > 0) {
+                return $gameSwitches.value($dataSkills[id].eqlShowSwitch);
+            } else {
+                return true;
+            }
+        });
+    }
+
+    for (var i = 0; i < skillList.length; i++) {
         var dy = y + this.lineHeight() * i;
-        var ability = $dataSkills[item.eqlSkill[i]];
+        var ability = $dataSkills[skillList[i]];
         if (ability) {
             this.drawIcon(ability.iconIndex, x, dy + 2);
+            this.contents.fontFace = Moogle_X.EQL.sklFontName;
+            this.contents.fontSize = Moogle_X.EQL.sklFontSize;
             this.drawText(ability.name, x + iconWidth, dy, w, 'left');
+            this.resetFontSettings();
             this.eqlDrawApGauge(ability, x, dy, w);
         }
     }
@@ -1457,6 +1631,7 @@ Window_ShopStatus.prototype.eqlDrawNoAbility = function(x, y, w) {
 };
 
 Window_ShopStatus.prototype.eqlDrawApGauge = function(ability, x, y, width) {
+    this.changePaintOpacity(true);
     var dx = x + Moogle_X.EQL.apOffsetX;
     var iconWidth = Window_Base._iconWidth + 4;
     var color1 = this.textColor(Moogle_X.EQL.apColor1);
@@ -1541,7 +1716,17 @@ Window_EqlAbilityList.prototype.drawAllItems = function() {
 
 Window_EqlAbilityList.prototype.preDrawAbilityList = function(item, x, y, w) {
     if (item) {
-        if (item.eqlSkill && item.eqlSkill.length > 0) {
+        var skillList = item.eqlSkill;
+        if (skillList) {
+            skillList = skillList.filter(function(id) {
+                if ($dataSkills[id] && $dataSkills[id].eqlShowSwitch > 0) {
+                    return $gameSwitches.value($dataSkills[id].eqlShowSwitch);
+                } else {
+                    return true;
+                }
+            });
+        }
+        if (skillList && skillList.length > 0) {
             this.drawAbilityList(item, x, y, w);
         } else {
             this.drawNoAbility(x, y, w);
@@ -1555,15 +1740,41 @@ Window_EqlAbilityList.prototype.drawAbilityList = function(item, x, y, w) {
     var iconWidth = Window_Base._iconWidth + 4;
     this.changeTextColor(this.normalColor());
     this.changePaintOpacity(true);
-    for (var i = 0; i < item.eqlSkill.length; i++) {
+
+    var skillList = item.eqlSkill;
+    if (skillList) {
+        skillList = skillList.filter(function(id) {
+            if ($dataSkills[id] && $dataSkills[id].eqlShowSwitch > 0) {
+                return $gameSwitches.value($dataSkills[id].eqlShowSwitch);
+            } else {
+                return true;
+            }
+        });
+    }
+
+    for (var i = 0; i < skillList.length; i++) {
         var dy = y + y * i;
-        var ability = $dataSkills[item.eqlSkill[i]];
+        var ability = $dataSkills[skillList[i]];
         if (ability) {
             this.drawIcon(ability.iconIndex, x, dy + 2);
-            this.drawText(ability.name, x + iconWidth, dy, w, 'left');
+            this.eqlDrawAbilityName(ability, x + iconWidth, dy, w, 'left');
             this.drawApGauge(ability, x, dy, w);
         }
     }
+};
+
+Window_EqlAbilityList.prototype.eqlDrawAbilityName = function(ability, x, y, w, align) {
+    this.changePaintOpacity(true);
+    this.contents.fontFace = Moogle_X.EQL.sklFontName;
+    this.contents.fontSize = Moogle_X.EQL.sklFontSize;
+    var eqlActor = this.actor();
+    eqlActor = this.eqlAdjustMasteryYanflyItemCore(eqlActor);
+    if (eqlActor && eqlActor.eqlCantLearnSkill(ability)) {
+        this.changePaintOpacity(false);
+    }
+    this.drawText(ability.name, x, y, w, align);
+    this.resetFontSettings();
+
 };
 
 Window_EqlAbilityList.prototype.drawNoAbility = function(x, y, w) {
@@ -1573,6 +1784,13 @@ Window_EqlAbilityList.prototype.drawNoAbility = function(x, y, w) {
 };
 
 Window_EqlAbilityList.prototype.drawApGauge = function(ability, x, y, width) {
+    if (this.actor() && this.actor().eqlCantLearnSkill(ability)) return;
+    var eqlActor = this.actor();
+    eqlActor = this.eqlAdjustMasteryYanflyItemCore(eqlActor);
+    if (eqlActor && eqlActor.eqlCantLearnSkill(ability)) {
+        return;
+    }
+    this.changePaintOpacity(true);
     var dx = x + Moogle_X.EQL.apOffsetX;
     var iconWidth = Window_Base._iconWidth + 4;
     var color1 = this.textColor(Moogle_X.EQL.apColor1);
