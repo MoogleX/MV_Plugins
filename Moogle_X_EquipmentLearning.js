@@ -12,7 +12,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1 Allows actors to learn skill from equipment.
+ * @plugindesc v1.12 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
@@ -335,6 +335,12 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.12:
+ * - Fixed Equip Skill System bug (actor can equip "unlearnable" skills).
+ * - Fixed Passive Skills bug (added "unlearnable" skills check).
+ * - Fixed Yanfly's Auto Passive States bug (added "unlearnable" skills check).
+ * - Fixed incorrect icon opacity in Window Ability List.
+ *
  * Version 1.1:
  * - Added option to change skill's font name and size in Window Ability List.
  * - Added actors and classes skills learning restriction.
@@ -887,6 +893,9 @@ Game_Actor.prototype.skills = function() {
     var list = Moogle_X.EQL.Game_Actor_skills.call(this);
     if (Moogle_X.EQL.instantMastery) {
         var array = this.getEqlObjects();
+        array = array.filter(function(skill) {
+            return !this.eqlCantLearnSkill(skill);
+        }, this);
         if (Imported.Moogle_X_EQS) {
             array = array.filter(function(skill) {
                 return skill.isEqsIgnore === true;
@@ -951,6 +960,10 @@ if (Imported.Moogle_X_EQS) {
                 return skill.isEqsIgnore === false;
             });
 
+            list = list.filter(function(skill) {
+                return !this.eqlCantLearnSkill(skill);
+            }, this);
+
             list.forEach(function(skill) {
                 if (!array.contains(skill)) {
                     array.push(skill);
@@ -964,7 +977,8 @@ if (Imported.Moogle_X_EQS) {
     Moogle_X.EQL.Game_Actor_eqsIsLearnedSkill = Game_Actor.prototype.eqsIsLearnedSkill;
     Game_Actor.prototype.eqsIsLearnedSkill = function(skillId) {
         return Moogle_X.EQL.Game_Actor_eqsIsLearnedSkill.call(this, skillId) ||
-            this.getEqlObjects().contains($dataSkills[skillId]);
+            (Moogle_X.EQL.instantMastery &&
+            this.getEqlObjects().contains($dataSkills[skillId]));
     };
 
 } // Imported.Moogle_X_EQS
@@ -976,11 +990,16 @@ if (Imported.Moogle_X_PsvSkl) {
         var array = Moogle_X.EQL.Game_Actor_getPsvSkillList.call(this);
         if (Moogle_X.EQL.instantMastery) {
             var list = this.getEqlObjects();
+            list = list.filter(function(skill) {
+                return !this.eqlCantLearnSkill(skill);
+            }, this);
+
             if (Imported.Moogle_X_EQS) {
                 list = list.filter(function(skill) {
                     return skill.isEqsIgnore === true;
                 });
             };
+
             list = list.filter(function(skill) {
                 return skill.isPassive === true;
             });
@@ -1025,6 +1044,9 @@ if (Imported.YEP_AutoPassiveStates) {
             if (Moogle_X.EQL.instantMastery) {
                 var eqlSkills = this.getEqlObjects();
                 eqlSkills = eqlSkills.filter(function(skill) {
+                    return !this.eqlCantLearnSkill(skill);
+                }, this);
+                eqlSkills = eqlSkills.filter(function(skill) {
                     return skill.isEqsIgnore === true;
                 });
                 eqlSkills = eqlSkills.map(function(skill) {
@@ -1041,6 +1063,9 @@ if (Imported.YEP_AutoPassiveStates) {
             var defaultSkills = this._skills;
             if (Moogle_X.EQL.instantMastery) {
                 var eqlSkills = this.getEqlObjects();
+                eqlSkills = eqlSkills.filter(function(skill) {
+                    return !this.eqlCantLearnSkill(skill);
+                }, this);
                 eqlSkills = eqlSkills.map(function(skill) {
                     return skill.id;
                 });
@@ -1756,11 +1781,21 @@ Window_EqlAbilityList.prototype.drawAbilityList = function(item, x, y, w) {
         var dy = y + y * i;
         var ability = $dataSkills[skillList[i]];
         if (ability) {
-            this.drawIcon(ability.iconIndex, x, dy + 2);
+            this.eqlDrawIcon(ability, x, dy + 2);
             this.eqlDrawAbilityName(ability, x + iconWidth, dy, w, 'left');
             this.drawApGauge(ability, x, dy, w);
         }
     }
+};
+
+Window_EqlAbilityList.prototype.eqlDrawIcon = function(ability, x, y) {
+    this.changePaintOpacity(true);
+    var eqlActor = this.actor();
+    eqlActor = this.eqlAdjustMasteryYanflyItemCore(eqlActor);
+    if (eqlActor && eqlActor.eqlCantLearnSkill(ability)) {
+        this.changePaintOpacity(false);
+    }
+    this.drawIcon(ability.iconIndex, x, y);
 };
 
 Window_EqlAbilityList.prototype.eqlDrawAbilityName = function(ability, x, y, w, align) {
