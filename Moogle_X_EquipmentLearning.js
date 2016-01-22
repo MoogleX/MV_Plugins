@@ -12,7 +12,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.12 Allows actors to learn skill from equipment.
+ * @plugindesc v1.13 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
@@ -172,6 +172,24 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * Example:
  * <EQL AP: 120>                  // This skill requires 120 AP to be learned.
  *
+ * NEW Feature! Actor Specific AP Requirement!
+ *
+ * You can alter how much AP requirement is needed for each actor.
+ * You can make certain actor to learn the same skill faster/slower compared to
+ * other actors.
+ *
+ * To do this, just insert this notetag into the actor's notebox:
+ *
+ * <EQL AP Change x: y%>          // This actor's AP requirement for skill x
+ *                                // is multiplied by y%.
+ *
+ * Example:
+ * <EQL AP Change 12: 50%>        // AP requirement for skill 12 will be half
+ *                                // the standard amount.
+ *
+ * <EQL AP Change 18: 200%>       // AP requirement for skill 18 will be twice
+ *                                // the standard amount.
+ *
  * ============================================================================
  * How to Set Up Enemies' AP "Drop"
  * ============================================================================
@@ -283,6 +301,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Actors Notetag:
  * <EQL Starting AP x: y>
+ * <EQL AP Change x: y%>
  *
  * Actors and Classes Notetags:
  * <EQL Learn Skills: x, y, z>
@@ -335,6 +354,9 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.13:
+ * - Added <EQL AP Change x: y%> actors notetag.
+ *
  * Version 1.12:
  * - Fixed Equip Skill System bug (actor can equip "unlearnable" skills).
  * - Fixed Passive Skills bug (added "unlearnable" skills check).
@@ -650,20 +672,26 @@ DataManager.isDatabaseLoaded = function() {
 };
 
 DataManager.readNotetags_EQL1 = function(group) {
-    var note = /<(?:EQL STARTING AP)[ ](\d+):[ ](\d+)>/i;
+    var note1 = /<(?:EQL STARTING AP)[ ](\d+):[ ](\d+)>/i;
+    var note2 = /<(?:EQL AP CHANGE)[ ](\d+):[ ](\d+)\%>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
 		    var notedata = obj.note.split(/[\r\n]+/);
 
         obj.eqlStartingAp = {};
+        obj.eqlApChange = {};
 
 		    for (var i = 0; i < notedata.length; i++) {
 			      var line = notedata[i];
-			      if (line.match(note)) {
+			      if (line.match(note1)) {
                 var skill  = Number(RegExp.$1);
                 var initAp = Number(RegExp.$2);
                 obj.eqlStartingAp[skill] = initAp;
+            } else if (line.match(note2)) {
+                var skillId = Number(RegExp.$1);
+                var apChange = Number(RegExp.$2) / 100;
+                obj.eqlApChange[skillId] = apChange;
             }
 		    }
 	  }
@@ -819,8 +847,16 @@ Game_Actor.prototype.initEqlSetup = function() {
     }
 };
 
+Game_Actor.prototype.eqlApNeeded = function(skill) {
+    if (!skill) return Moogle_X.EQL.defApReq;
+    var baseAp = skill.eqlAp;
+    var rate = this.actor().eqlApChange[skill.id] || 1;
+    var finalAp = Math.round(baseAp * rate);
+    return finalAp;
+};
+
 Game_Actor.prototype.eqlCheckMastery = function(skillId) {
-    var apNeeded = $dataSkills[skillId].eqlAp;
+    var apNeeded = this.eqlApNeeded($dataSkills[skillId]);
     if (!this._eqlAp[skillId]) {
         this._eqlAp[skillId] = 0;
     }
@@ -874,7 +910,7 @@ Game_Actor.prototype.eqlNewSkill = function() {
 };
 
 Game_Actor.prototype.eqlIsMastered = function(skillId) {
-    var apNeeded = $dataSkills[skillId].eqlAp;
+    var apNeeded = this.eqlApNeeded($dataSkills[skillId]);
     return this._eqlAp[skillId] >= apNeeded || this.isLearnedSkill(skillId);
 };
 
@@ -926,7 +962,7 @@ Game_Actor.prototype.getEqlObjects = function() {
 
 Game_Actor.prototype.eqlApRate = function(skill) {
     if (this.eqlIsMastered(skill.id)) return 1;
-    return this._eqlAp[skill.id] / skill.eqlAp;
+    return this._eqlAp[skill.id] / this.eqlApNeeded(skill);
 };
 
 Game_Actor.prototype.eqlCantLearnSkill = function(skill) {
@@ -1846,7 +1882,8 @@ Window_EqlAbilityList.prototype.drawApNumbers = function(ability, x, y, width) {
     var baseAp = this.actor() ? this.actor()._eqlAp[ability.id] : 0;
     baseAp = this.eqlAdjustBaseApIfLearned(baseAp, ability, this.actor());
     baseAp = this.eqlAdjustBaseApYanflyItemCore(baseAp, ability);
-    var maxAp = ability.eqlAp;
+    var maxAp = this.actor() ? this.actor().eqlApNeeded(ability) : ability.eqlAp;
+    maxAp = this.eqlAdjustMaxApYanflyItemCore(maxAp, ability);
     if (Imported.YEP_CoreEngine) {
         baseAp = Yanfly.Util.toGroup(baseAp);
         maxAp = Yanfly.Util.toGroup(maxAp);
@@ -1867,7 +1904,7 @@ Window_EqlAbilityList.prototype.drawMasteryIcon = function(ability, x, y) {
 Window_EqlAbilityList.prototype.eqlAdjustBaseApIfLearned = function(baseAp, ability, actor) {
     if (actor) {
         if (actor.isLearnedSkill(ability.id)) {
-            baseAp = ability.eqlAp;
+            baseAp = actor.eqlApNeeded(ability);
         }
     }
     return baseAp;
@@ -1942,6 +1979,38 @@ Window_EqlAbilityList.prototype.eqlAdjustBaseApYanflyItemCore = function(baseAp,
     }
 
     return baseAp;
+};
+
+Window_EqlAbilityList.prototype.eqlAdjustMaxApYanflyItemCore = function(maxAp, ability) {
+    if (SceneManager._scene instanceof Scene_Item) {
+        if (Imported.YEP_ItemCore && eval(Yanfly.Param.ItemShEquipped)) {
+            if (DataManager.isIndependent(this.item())) {
+
+                if (DataManager.isItem(this.item())) {
+                    var index = $gameParty.items().indexOf(this.item());
+                } else if (DataManager.isWeapon(this.item())) {
+                    var index = $gameParty.weapons().indexOf(this.item());
+                } else if (DataManager.isArmor(this.item())) {
+                    var index = $gameParty.armors().indexOf(this.item());
+                }
+
+                if (index < 0) {
+                    var carrier = null;
+                    for (var a = 0; a < $gameParty.members().length; ++a) {
+                        var actor = $gameParty.members()[a];
+                        if (!actor) continue;
+                        if (actor.equips().contains(this.item())) carrier = actor;
+                    }
+                }
+
+                if (carrier) {
+                    maxAp = carrier.eqlApNeeded(ability);
+                }
+            }
+        }
+    }
+
+    return maxAp;
 };
 
 Window_EqlAbilityList.prototype.eqlAdjustMasteryYanflyItemCore = function(eqlActor) {
