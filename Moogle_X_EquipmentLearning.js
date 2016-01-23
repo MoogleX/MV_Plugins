@@ -12,7 +12,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.13 Allows actors to learn skill from equipment.
+ * @plugindesc v1.2 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
@@ -75,9 +75,21 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * @desc This is the font size for skills in Window Ability List.
  * @default 28
  *
+ * @param Skill Name Offset X
+ * @desc Change the offset X value of skill name. (Positive: right; Negative: left)
+ * @default 0
+ *
+ * @param Skill Name Offset Y
+ * @desc Change the offset Y value of skill name. (Positive: down; Negative: up)
+ * @default 0
+ *
  * @param AP Text Color
  * @desc This is the text color for "AP" in Window Ability List.
  * @default 2
+ *
+ * @param AP Text Offset X
+ * @desc Change the offset X value of "AP" in Window Ability List. (Positive: right; Negative: left)
+ * @default 0
  *
  * @param AP Gauge Color 1
  * @desc This is the first gauge color for "AP Gauge" in Window Ability List.
@@ -94,6 +106,10 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * @param Mastery Icon
  * @desc This is the icon index for "Mastered Skill" in Window Ability List.
  * @default 87
+ *
+ * @param Show Skill Icon
+ * @desc Do you want to show skill icon in Window Ability List? 1:Yes 0:No
+ * @default 1
  *
  * @param ---Victory Aftermath---
  * @default
@@ -118,6 +134,29 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * @param Show Aftermath New Skill
  * @desc Display new learned skills in Victory Aftermath AP window? 1:Yes 0:No
  * @default 1
+ *
+ * @param ---Custom Scroll Images---
+ * @default
+ *
+ * @param Use Custom Scroll Images
+ * @desc Enable custom left and right scroll images? 1:Yes 0:No
+ * @default 0
+ *
+ * @param Left Scroll Offset X
+ * @desc Change the offset X value of Left Scroll Image. (Positive: right; Negative: left)
+ * @default 0
+ *
+ * @param Left Scroll Offset Y
+ * @desc Change the offset Y value of Left Scroll Image. (Positive: down; Negative: up)
+ * @default 0
+ *
+ * @param Right Scroll Offset X
+ * @desc Change the offset X value of Right Scroll Image. (Positive: right; Negative: left)
+ * @default 0
+ *
+ * @param Right Scroll Offset Y
+ * @desc Change the offset Y value of Right Scroll Image. (Positive: down; Negative: up)
+ * @default 0
  *
  * @help
  * ============================================================================
@@ -297,6 +336,20 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * project. Use them at your own risk.)
  *
  * ============================================================================
+ * Miscellaneous - Custom Scroll Images
+ * ============================================================================
+ * If you wish to disable left and right horizontal arrows and instead use
+ * custom scroll images at the left and right bottom corners of the windows,
+ * please turn on the parameter "Use Custom Scroll Images" in the Plugin
+ * configurations.
+ *
+ * You will need to put 2 png files named "eqlLeftScroll" and "eqlRightScroll"
+ * inside '(Project Folder)/img/system' directory.
+ *
+ * You can adjust the offset X and offset Y value of both images in the Plugin
+ * configurations.
+ *
+ * ============================================================================
  * Notetags and Plugin Commands List
  * ============================================================================
  * Actors Notetag:
@@ -354,6 +407,13 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.2:
+ * - Added Custom Scroll Images feature.
+ * - Change the drawing order of ability list. Skill name is now drawn last.
+ * - Added option to disable/enable skill icon in Window Ability List.
+ * - Added offset X and offset Y parameters for skill name in Window Ability List.
+ * - Added offset X parameter for "AP" text in Window Ability List.
+ *
  * Version 1.13:
  * - Added <EQL AP Change x: y%> actors notetag.
  *
@@ -407,6 +467,15 @@ Moogle_X.EQL.masteryIcon = Number(Moogle_X.EQL.parameters['Mastery Icon'] || '0'
 Moogle_X.EQL.sklFontName = String(Moogle_X.EQL.parameters["Skill's Font Name"] || 'GameFont');
 Moogle_X.EQL.sklFontSize = Number(Moogle_X.EQL.parameters["Skill's Font Size"] || 28);
 Moogle_X.EQL.allSklLearn = Number(Moogle_X.EQL.parameters['All Skills Learnable']) != 0;
+Moogle_X.EQL.useScrollImages = Number(Moogle_X.EQL.parameters['Use Custom Scroll Images']) != 0;
+Moogle_X.EQL.leftScrollX = Number(Moogle_X.EQL.parameters['Left Scroll Offset X'] || 0);
+Moogle_X.EQL.leftScrollY = Number(Moogle_X.EQL.parameters['Left Scroll Offset Y'] || 0);
+Moogle_X.EQL.rightScrollX = Number(Moogle_X.EQL.parameters['Right Scroll Offset X'] || 0);
+Moogle_X.EQL.rightScrollY = Number(Moogle_X.EQL.parameters['Right Scroll Offset Y'] || 0);
+Moogle_X.EQL.showSkillIcon = Number(Moogle_X.EQL.parameters['Show Skill Icon']) != 0;
+Moogle_X.EQL.skillNameX = Number(Moogle_X.EQL.parameters['Skill Name Offset X'] || 0);
+Moogle_X.EQL.skillNameY = Number(Moogle_X.EQL.parameters['Skill Name Offset Y'] || 0);
+Moogle_X.EQL.apTextOffsetX = Number(Moogle_X.EQL.parameters['AP Text Offset X'] || 0);
 
 //=============================================================================
 // Moogle_X - Window Horizontal Arrows (START)
@@ -440,22 +509,43 @@ Window.prototype._createAllParts = function() {
 Moogle_X.hArrows.Window_refreshArrows = Window.prototype._refreshArrows;
 Window.prototype._refreshArrows = function() {
     Moogle_X.hArrows.Window_refreshArrows.call(this);
-    var w = this._width;
-    var h = this._height;
-    var p = 24;
-    var q = p/2;
-    var sx = 96+p;
-    var sy = 0+p;
-    this._Moogle_X_leftArrowSprite.bitmap = this._windowskin;
-    this._Moogle_X_leftArrowSprite.anchor.x = 0.5;
-    this._Moogle_X_leftArrowSprite.anchor.y = 0.5;
-    this._Moogle_X_leftArrowSprite.setFrame(sx, sy+q, q, p);
-    this._Moogle_X_leftArrowSprite.move(q, h/2);
-    this._Moogle_X_rightArrowSprite.bitmap = this._windowskin;
-    this._Moogle_X_rightArrowSprite.anchor.x = 0.5;
-    this._Moogle_X_rightArrowSprite.anchor.y = 0.5;
-    this._Moogle_X_rightArrowSprite.setFrame(sx+p+q, sy+q, q, p);
-    this._Moogle_X_rightArrowSprite.move(w-q, h/2);
+    if (Moogle_X.EQL.useScrollImages) {
+        var w = this._width;
+        var h = this._height;
+        var p = 24;
+        var q = p/2;
+        var leftOffsetX = Moogle_X.EQL.leftScrollX;
+        var leftOffsetY = Moogle_X.EQL.leftScrollY;
+        var rightOffsetX = Moogle_X.EQL.rightScrollX;
+        var rightOffsetY = Moogle_X.EQL.rightScrollY;
+        var leftScroll = Bitmap.load('img/system/eqlLeftScroll.png');
+        var rightScroll = Bitmap.load('img/system/eqlRightScroll.png');
+
+        this._Moogle_X_leftArrowSprite.bitmap = leftScroll;
+        this._Moogle_X_leftArrowSprite.move(q + leftOffsetX, h-q-29 + leftOffsetY);
+
+        this._Moogle_X_rightArrowSprite.bitmap = rightScroll;
+        this._Moogle_X_rightArrowSprite.move(w-q-98 + rightOffsetX, h-q-29 + rightOffsetY);
+
+    } else {
+        var w = this._width;
+        var h = this._height;
+        var p = 24;
+        var q = p/2;
+        var sx = 96+p;
+        var sy = 0+p;
+        this._Moogle_X_leftArrowSprite.bitmap = this._windowskin;
+        this._Moogle_X_leftArrowSprite.anchor.x = 0.5;
+        this._Moogle_X_leftArrowSprite.anchor.y = 0.5;
+        this._Moogle_X_leftArrowSprite.setFrame(sx, sy+q, q, p);
+        this._Moogle_X_leftArrowSprite.move(q, h/2);
+        this._Moogle_X_rightArrowSprite.bitmap = this._windowskin;
+        this._Moogle_X_rightArrowSprite.anchor.x = 0.5;
+        this._Moogle_X_rightArrowSprite.anchor.y = 0.5;
+        this._Moogle_X_rightArrowSprite.setFrame(sx+p+q, sy+q, q, p);
+        this._Moogle_X_rightArrowSprite.move(w-q, h/2);
+    }
+
 };
 
 Moogle_X.hArrows.Window_updateArrows = Window.prototype._updateArrows;
@@ -1670,16 +1760,21 @@ Window_ShopStatus.prototype.eqlDrawAbilityList = function(item, x, y, w) {
         });
     }
 
+    var offsetX = Moogle_X.EQL.skillNameX;
+    var offsetY = Moogle_X.EQL.skillNameY;
+
     for (var i = 0; i < skillList.length; i++) {
         var dy = y + this.lineHeight() * i;
         var ability = $dataSkills[skillList[i]];
         if (ability) {
-            this.drawIcon(ability.iconIndex, x, dy + 2);
-            this.contents.fontFace = Moogle_X.EQL.sklFontName;
-            this.contents.fontSize = Moogle_X.EQL.sklFontSize;
-            this.drawText(ability.name, x + iconWidth, dy, w, 'left');
+            if (Moogle_X.EQL.showSkillIcon) this.drawIcon(ability.iconIndex, x, dy + 2);
             this.resetFontSettings();
             this.eqlDrawApGauge(ability, x, dy, w);
+            this.contents.fontFace = Moogle_X.EQL.sklFontName;
+            this.contents.fontSize = Moogle_X.EQL.sklFontSize;
+            this.drawText(ability.name, x + iconWidth + offsetX, dy + offsetY,
+                w, 'left');
+            this.resetFontSettings();
         }
     }
 };
@@ -1700,7 +1795,7 @@ Window_ShopStatus.prototype.eqlDrawApGauge = function(ability, x, y, width) {
     var rate = 0;
     this.drawGauge(dx, y, width - dx - iconWidth - 2, rate, color1, color2);
     this.changeTextColor(this.textColor(Moogle_X.EQL.apTextColor));
-    this.drawText(Moogle_X.EQL.apVocab, dx, y, width);
+    this.drawText(Moogle_X.EQL.apVocab, dx + Moogle_X.EQL.apTextOffsetX, y, width);
     this.changeTextColor(this.normalColor());
     this.eqlDrawApNumbers(ability, dx, y, width - dx - iconWidth - 2);
 };
@@ -1813,18 +1908,23 @@ Window_EqlAbilityList.prototype.drawAbilityList = function(item, x, y, w) {
         });
     }
 
+    var offsetX = Moogle_X.EQL.skillNameX;
+    var offsetY = Moogle_X.EQL.skillNameY;
+
     for (var i = 0; i < skillList.length; i++) {
         var dy = y + y * i;
         var ability = $dataSkills[skillList[i]];
         if (ability) {
             this.eqlDrawIcon(ability, x, dy + 2);
-            this.eqlDrawAbilityName(ability, x + iconWidth, dy, w, 'left');
             this.drawApGauge(ability, x, dy, w);
+            this.eqlDrawAbilityName(ability, x + iconWidth + offsetX,
+                dy + offsetY, w, 'left');
         }
     }
 };
 
 Window_EqlAbilityList.prototype.eqlDrawIcon = function(ability, x, y) {
+    if (!Moogle_X.EQL.showSkillIcon) return;
     this.changePaintOpacity(true);
     var eqlActor = this.actor();
     eqlActor = this.eqlAdjustMasteryYanflyItemCore(eqlActor);
@@ -1872,7 +1972,7 @@ Window_EqlAbilityList.prototype.drawApGauge = function(ability, x, y, width) {
 
     this.drawGauge(dx, y, width - dx - iconWidth - 2, rate, color1, color2);
     this.changeTextColor(this.textColor(Moogle_X.EQL.apTextColor));
-    this.drawText(Moogle_X.EQL.apVocab, dx, y, width);
+    this.drawText(Moogle_X.EQL.apVocab, dx + Moogle_X.EQL.apTextOffsetX, y, width);
     this.changeTextColor(this.normalColor());
     this.drawApNumbers(ability, dx, y, width - dx - iconWidth - 2);
     this.drawMasteryIcon(ability, width - iconWidth + 2, y + 2);
