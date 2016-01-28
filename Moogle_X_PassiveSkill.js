@@ -12,7 +12,7 @@ Moogle_X.PsvSkl = Moogle_X.PsvSkl || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.13 Adds passive skills functionality to actors.
+ * @plugindesc v1.14 Adds passive skills functionality to actors.
  * @author Moogle_X
  *
  * @param Default Hide in Battle
@@ -113,6 +113,10 @@ Moogle_X.PsvSkl = Moogle_X.PsvSkl || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.14:
+ * - Fixed "Hidden Skill Type ID in Battle" parameter not working in
+ *   MOG_BattleHud plugin.
+ *
  * Version 1.13:
  * - Added compatibility patch with YEP_X_SkillCooldowns v1.07.
  *
@@ -339,12 +343,13 @@ Window_BattleSkill.prototype.includes = function(item) {
 Moogle_X.PsvSkl.Game_BattlerBase_addedSkillTypes =
     Game_BattlerBase.prototype.addedSkillTypes;
 Game_BattlerBase.prototype.addedSkillTypes = function() {
-    if ($gameParty.inBattle()) {
+    //if ($gameParty.inBattle()) {
+    if (SceneManager._scene instanceof Scene_Battle) {
         var types = Moogle_X.PsvSkl.Game_BattlerBase_addedSkillTypes.call(this)
-        var index = types.indexOf(Moogle_X.PsvSkl.hiddenSkillTypeId);
-        if (index >= 0) {
-            types.splice(index, 1);
-        }
+        var passiveId = Moogle_X.PsvSkl.hiddenSkillTypeId;
+        types = types.filter(function(stypeId) {
+            return stypeId !== passiveId;
+        });
         return types;
     } else {
         return Moogle_X.PsvSkl.Game_BattlerBase_addedSkillTypes.call(this);
