@@ -12,7 +12,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.2 Allows actors to learn skill from equipment.
+ * @plugindesc v1.21 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
@@ -30,6 +30,10 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * @param AP Gain Per Action
  * @desc This is the AP gain for each battle action.
  * @default 1
+ *
+ * @param No AP Gain Skill List
+ * @desc This is the list of skill id(s) that won't trigger AP Gain. Example: 1 2 48 59
+ * @default 0
  *
  * @param Default AP Requirement
  * @desc This is the default AP needed to learn skill from equipment.
@@ -50,6 +54,10 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  *
  * @param ---Window Ability List---
  * @default
+ *
+ * @param Display Added Skills
+ * @desc Equipment also display in the window all added skills from traits? 1:Yes 0:No
+ * @default 1
  *
  * @param Ability Title
  * @desc This is the text for "Ability" at the top of Window Ability List.
@@ -407,6 +415,10 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.21:
+ * - Added "Display Added Skills" parameter.
+ * - Added "No AP Gain Skill List" parameter.
+ *
  * Version 1.2:
  * - Added Custom Scroll Images feature.
  * - Change the drawing order of ability list. Skill name is now drawn last.
@@ -476,6 +488,14 @@ Moogle_X.EQL.showSkillIcon = Number(Moogle_X.EQL.parameters['Show Skill Icon']) 
 Moogle_X.EQL.skillNameX = Number(Moogle_X.EQL.parameters['Skill Name Offset X'] || 0);
 Moogle_X.EQL.skillNameY = Number(Moogle_X.EQL.parameters['Skill Name Offset Y'] || 0);
 Moogle_X.EQL.apTextOffsetX = Number(Moogle_X.EQL.parameters['AP Text Offset X'] || 0);
+Moogle_X.EQL.showAddedSkills = Number(Moogle_X.EQL.parameters['Display Added Skills']) != 0;
+Moogle_X.EQL.noApGainList = String(Moogle_X.EQL.parameters['No AP Gain Skill List'] || 0);
+
+var noApSkillIds = Moogle_X.EQL.noApGainList.split(' ');
+Moogle_X.EQL.noApGainList = [];
+for (var i = 0; i < noApSkillIds.length; i++) {
+    Moogle_X.EQL.noApGainList.push(Number(noApSkillIds[i]));
+}
 
 //=============================================================================
 // Moogle_X - Window Horizontal Arrows (START)
@@ -1218,6 +1238,11 @@ Moogle_X.EQL.Game_Battler_useItem = Game_Battler.prototype.useItem;
 Game_Battler.prototype.useItem = function(item) {
     Moogle_X.EQL.Game_Battler_useItem.call(this, item);
     if (!$gameParty.inBattle()) return;
+    if (this.isActor() && item === $dataSkills[item.id]) {
+        if (Moogle_X.EQL.noApGainList.contains(item.id)) {
+            return;
+        }
+    }
     if (this.isActor()) this.eqlGainAp(Moogle_X.EQL.apPerAction);
 };
 
@@ -1734,6 +1759,12 @@ Window_ShopStatus.prototype.drawActorStatInfo = function(actor) {
             });
         }
 
+        // Display added skills feature.
+        if (Moogle_X.EQL.showAddedSkills) {
+            var addedSkills = this.getAddedSkills(this._item);
+            skillList = addedSkills.concat(skillList);
+        }
+
         if (skillList && skillList.length > 0) {
             this.eqlDrawAbilityList(this._item, 0, y, w);
         } else {
@@ -1758,6 +1789,12 @@ Window_ShopStatus.prototype.eqlDrawAbilityList = function(item, x, y, w) {
                 return true;
             }
         });
+    }
+
+    // Display added skills feature.
+    if (Moogle_X.EQL.showAddedSkills) {
+        var addedSkills = this.getAddedSkills(item);
+        skillList = addedSkills.concat(skillList);
     }
 
     var offsetX = Moogle_X.EQL.skillNameX;
@@ -1788,6 +1825,15 @@ Window_ShopStatus.prototype.eqlDrawNoAbility = function(x, y, w) {
 
 Window_ShopStatus.prototype.eqlDrawApGauge = function(ability, x, y, width) {
     this.changePaintOpacity(true);
+
+    // Display added skills feature.
+    if (Moogle_X.EQL.showAddedSkills) {
+        var addedSkills = this.getAddedSkills(this._item);
+        if (addedSkills.contains(ability.id)) {
+            return;
+        }
+    }
+
     var dx = x + Moogle_X.EQL.apOffsetX;
     var iconWidth = Window_Base._iconWidth + 4;
     var color1 = this.textColor(Moogle_X.EQL.apColor1);
@@ -1808,6 +1854,22 @@ Window_ShopStatus.prototype.eqlDrawApNumbers = function(ability, x, y, width) {
     }
     var text = baseAp + "/" + maxAp;
     this.drawText(text, x, y, width, 'right');
+};
+
+Window_ShopStatus.prototype.getAddedSkills = function(item) {
+    var list = [];
+    if (!item) return list;
+    if (!item.traits) return list;
+    var traits = item.traits;
+    traits = traits.filter(function(trait) {
+        return trait.code === Game_BattlerBase.TRAIT_SKILL_ADD;
+    });
+
+    traits = traits.reduce(function(r, trait) {
+        return r.concat(trait.dataId);
+    }, []);
+
+    return traits;
 };
 
 } // Imported.YEP_ShopMenuCore
@@ -1882,6 +1944,13 @@ Window_EqlAbilityList.prototype.preDrawAbilityList = function(item, x, y, w) {
                 }
             });
         }
+
+        // Display added skills feature.
+        if (Moogle_X.EQL.showAddedSkills) {
+            var addedSkills = this.getAddedSkills(item);
+            skillList = addedSkills.concat(skillList);
+        }
+
         if (skillList && skillList.length > 0) {
             this.drawAbilityList(item, x, y, w);
         } else {
@@ -1890,6 +1959,22 @@ Window_EqlAbilityList.prototype.preDrawAbilityList = function(item, x, y, w) {
     } else {
         this.drawNoAbility(x, y, w);
     }
+};
+
+Window_EqlAbilityList.prototype.getAddedSkills = function(item) {
+    var list = [];
+    if (!item) return list;
+    if (!item.traits) return list;
+    var traits = item.traits;
+    traits = traits.filter(function(trait) {
+        return trait.code === Game_BattlerBase.TRAIT_SKILL_ADD;
+    });
+
+    traits = traits.reduce(function(r, trait) {
+        return r.concat(trait.dataId);
+    }, []);
+
+    return traits;
 };
 
 Window_EqlAbilityList.prototype.drawAbilityList = function(item, x, y, w) {
@@ -1906,6 +1991,12 @@ Window_EqlAbilityList.prototype.drawAbilityList = function(item, x, y, w) {
                 return true;
             }
         });
+    }
+
+    // Display added skills feature.
+    if (Moogle_X.EQL.showAddedSkills) {
+        var addedSkills = this.getAddedSkills(item);
+        skillList = addedSkills.concat(skillList);
     }
 
     var offsetX = Moogle_X.EQL.skillNameX;
@@ -1931,6 +2022,15 @@ Window_EqlAbilityList.prototype.eqlDrawIcon = function(ability, x, y) {
     if (eqlActor && eqlActor.eqlCantLearnSkill(ability)) {
         this.changePaintOpacity(false);
     }
+
+    // Display added skills feature.
+    if (Moogle_X.EQL.showAddedSkills) {
+        var addedSkills = this.getAddedSkills(this.item());
+        if (addedSkills.contains(ability.id)) {
+            this.changePaintOpacity(true);
+        }
+    }
+
     this.drawIcon(ability.iconIndex, x, y);
 };
 
@@ -1943,6 +2043,15 @@ Window_EqlAbilityList.prototype.eqlDrawAbilityName = function(ability, x, y, w, 
     if (eqlActor && eqlActor.eqlCantLearnSkill(ability)) {
         this.changePaintOpacity(false);
     }
+
+    // Display added skills feature.
+    if (Moogle_X.EQL.showAddedSkills) {
+        var addedSkills = this.getAddedSkills(this.item());
+        if (addedSkills.contains(ability.id)) {
+            this.changePaintOpacity(true);
+        }
+    }
+
     this.drawText(ability.name, x, y, w, align);
     this.resetFontSettings();
 
@@ -1956,6 +2065,15 @@ Window_EqlAbilityList.prototype.drawNoAbility = function(x, y, w) {
 
 Window_EqlAbilityList.prototype.drawApGauge = function(ability, x, y, width) {
     if (this.actor() && this.actor().eqlCantLearnSkill(ability)) return;
+
+    // Display added skills feature.
+    if (Moogle_X.EQL.showAddedSkills) {
+        var addedSkills = this.getAddedSkills(this.item());
+        if (addedSkills.contains(ability.id)) {
+            return;
+        }
+    }
+
     var eqlActor = this.actor();
     eqlActor = this.eqlAdjustMasteryYanflyItemCore(eqlActor);
     if (eqlActor && eqlActor.eqlCantLearnSkill(ability)) {
