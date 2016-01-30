@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.43 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.44 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Limit
@@ -22,6 +22,10 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * @param Default Equip Cost
  * @desc This is the default skill equip cost for all skills.
  * @default 1
+ *
+ * @param Party Based Skill Pool
+ * @desc Skill pool will show all party's skills instead of user's skills only. 1:Yes 0:No
+ * @default 0
  *
  * @param ---Scene---
  * @default
@@ -816,6 +820,9 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.44:
+ * - Added "Party Based Skill Pool" parameter.
+ *
  * Version 1.43:
  * - Added "blocked skills" feature.
  * - Added new plugin commands for unequipping skill(s).
@@ -872,6 +879,7 @@ Moogle_X.EQS.eqSeName = String(Moogle_X.EQS.parameters['Equip SE Name'] || 'Equi
 Moogle_X.EQS.eqSeVolume = Number(Moogle_X.EQS.parameters['Equip SE Volume'] || 0);
 Moogle_X.EQS.eqSePitch = Number(Moogle_X.EQS.parameters['Equip SE Pitch'] || 0);
 Moogle_X.EQS.eqSePan = Number(Moogle_X.EQS.parameters['Equip SE Pan'] || 0);
+Moogle_X.EQS.partySkillPool = Number(Moogle_X.EQS.parameters['Party Based Skill Pool']) != 0;
 
 // Slot Types variables.
 
@@ -1263,6 +1271,7 @@ DataManager.readNotetags_EQS5 = function(group) {
 	  }
 };
 
+
 //=============================================================================
 // Game_Actor
 //=============================================================================
@@ -1430,9 +1439,21 @@ Game_Actor.prototype.canEquipSkill = function(skill) {
     }
 };
 
+// A simple method made for other plugins compatibility.
 Game_Actor.prototype.eqsIsLearnedSkill = function(skillId) {
-    // A simple method made for other plugins compatibility.
-    return this.isLearnedSkill(skillId);
+    // Party based skill pool.
+    if (Moogle_X.EQS.partySkillPool) {
+        var list = [];
+        for (var i = 0; i < $gameParty.allMembers().length; i++) {
+            var skillPool = $gameParty.allMembers()[i]._skills;
+            list = list.concat(skillPool);
+        }
+        return list.contains(skillId);
+
+    } else {
+        // Default skill pool.
+        return this._skills.contains(skillId);
+    }
 };
 
 Game_Actor.prototype.canPayEqsCost = function(skill) {
@@ -1457,7 +1478,21 @@ Game_Actor.prototype.eqsSkillEquipped = function(skill) {
     if (skill === null) {
         return false;
     }
-    var list = this.getEqsArray();
+
+    var list = [];
+
+    // Party based skill pool.
+    if (Moogle_X.EQS.partySkillPool) {
+        for (var i = 0; i < $gameParty.allMembers().length; i++) {
+            var skillPool = $gameParty.allMembers()[i].getEqsArray();
+            list = list.concat(skillPool);
+        }
+
+    } else {
+        // Default skill pool.
+        list = this.getEqsArray();
+    }
+
     return list.contains(skill.id) ? true : false;
 };
 
@@ -2049,7 +2084,23 @@ Window_EquipSkillPool.prototype.makeItemList = function() {
     if (this._actor) {
         this._data = [];
         if (this._typeId !== null) {
-            this._data = this._actor.getSkillPool(this._typeId);
+
+            // Party based skill pool.
+            if (Moogle_X.EQS.partySkillPool) {
+                for (var i = 0; i < $gameParty.allMembers().length; i++) {
+                    var skillPool = $gameParty.allMembers()[i].getSkillPool(this._typeId);
+                    skillPool.forEach(function(skill) {
+                        if (!this._data.contains(skill)) {
+                            this._data.push(skill);
+                        }
+                    }, this);
+                }
+
+            } else {
+                // Default skill pool.
+                this._data = this._actor.getSkillPool(this._typeId);
+            }
+
             this._data.push(null);
         }
     } else {
