@@ -12,7 +12,7 @@ Moogle_X.TEB = Moogle_X.TEB || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0 Adds plenty of new traits to your game.
+ * @plugindesc v1.01 Adds plenty of new traits to your game.
  * @author Moogle_X
  *
  * @param Victory Cry Revival
@@ -172,7 +172,8 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * Description:
  *   Another set of regeneration traits that occur at the END OF BATTLE only.
  *   These regeneration will be applied to all actors in active battle party
- *   only at the end of battle.
+ *   only if the battle resulted in victory. Escape and losing won't trigger
+ *   any regeneration.
  *
  *   By default, inactive party members do NOT receive any regeneration from
  *   these traits. If you want inactive party members to be affected by These
@@ -187,7 +188,7 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * Notetag: <TEB Piercing Magic>
  * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
  * Description:
- *   ALl actors and enemies with this trait will not trigger Magic Reflection
+ *   All actors and enemies with this trait will not trigger Magic Reflection
  *   when they use magical skills.
  *
  * Source: Final Fantasy series.
@@ -198,7 +199,7 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * Notetag: <TEB Ignore Counter>
  * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
  * Description:
- *   ALl actors and enemies with this trait will not trigger Counter Attack
+ *   All actors and enemies with this trait will not trigger Counter Attack
  *   when they use physical skills.
  *
  * ============================================================================
@@ -207,8 +208,8 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * Notetag: <TEB Natural Cure: x%>
  * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
  * Description:
- *   ALl actors and enemies with this trait will have x% chance to remove some
- *   pre-defined states at the end of each turn. You can decide which states
+ *   All actors and enemies with this trait will have x% chance to remove some
+ *   predefined states at the end of each turn. You can decide which states
  *   to be removed by this trait in the "Natural Cure List" plugin parameter.
  *
  *   Multiple copies of this trait will be additive instead of multiplicative.
@@ -221,7 +222,7 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * Notetag: <TEB Spellbound: x>
  * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
  * Description:
- *   ALl actors and enemies with this trait will get extra x turns duration
+ *   All actors and enemies with this trait will get extra x turns duration
  *   for certain states. In other words, their states' duration will last longer
  *   than usual.
  *
@@ -232,6 +233,69 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  *   Multiple copies of this trait will be additive instead of multiplicative.
  *
  * Source: FFTA2 (Time Mage's Extend spell).
+ *
+ * ============================================================================
+ * 13. Static Parameter Bonus (SPB)
+ * ============================================================================
+ * Notetag: <TEB SPB MHP: x>        // +x Max HP bonus.
+ *          <TEB SPB MHP: -x>       // -x Max HP bonus.
+ *          <TEB SPB MMP: x>        // +x Max MP bonus.
+ *          <TEB SPB MMP: -x>       // -x Max MP bonus.
+ *          <TEB SPB ATK: x>        // +x Attack bonus.
+ *          <TEB SPB ATK: -x>       // -x Attack bonus.
+ *          <TEB SPB DEF: x>        // +x Defense bonus.
+ *          <TEB SPB DEF: -x>       // -x Defense bonus.
+ *          <TEB SPB MAT: x>        // +x Magic Attack bonus.
+ *          <TEB SPB MAT: -x>       // -x Magic Attack bonus.
+ *          <TEB SPB MDF: x>        // +x Magic Defense bonus.
+ *          <TEB SPB MDF: -x>       // -x Magic Defense bonus.
+ *          <TEB SPB AGI: x>        // +x Agility bonus.
+ *          <TEB SPB AGI: -x>       // -x Agility bonus.
+ *          <TEB SPB LUK: x>        // +x Luck bonus.
+ *          <TEB SPB LUK: -x>       // -x Luck bonus.
+ *
+ * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
+ * Description:
+ *   By default, you can only apply parameter bonus based on percentage value
+ *   only like 120% Attack or 150% Magic. Now, you can apply static parameter
+ *   bonus like +35 Max HP or -40 Agility.
+ *
+ *   Multiple copies of these traits will be additive.
+ *
+ * ============================================================================
+ * 14. Full HP Bonus (FHB)
+ * ============================================================================
+ * Notetag: <TEB FHB ATK: x%>       // x% Attack rate multiplier.
+ *          <TEB FHB DEF: x%>       // x% Defense rate multiplier.
+ *          <TEB FHB MAT: x%>       // x% Magic Attack rate multiplier.
+ *          <TEB FHB MDF: x%>       // x% Magic Defense rate multiplier.
+ *          <TEB FHB AGI: x%>       // x% Agility rate multiplier.
+ *          <TEB FHB LUK: x%>       // x% Luck rate multiplier.
+ *
+ *          <TEB FHB ATK: x>        // +x Attack bonus.
+ *          <TEB FHB ATK: -x>       // -x Attack bonus.
+ *          <TEB FHB DEF: x>        // +x Defense bonus.
+ *          <TEB FHB DEF: -x>       // -x Defense bonus.
+ *          <TEB FHB MAT: x>        // +x Magic Attack bonus.
+ *          <TEB FHB MAT: -x>       // -x Magic Attack bonus.
+ *          <TEB FHB MDF: x>        // +x Magic Defense bonus.
+ *          <TEB FHB MDF: -x>       // -x Magic Defense bonus.
+ *          <TEB FHB AGI: x>        // +x Agility bonus.
+ *          <TEB FHB AGI: -x>       // -x Agility bonus.
+ *          <TEB FHB LUK: x>        // +x Luck bonus.
+ *          <TEB FHB LUK: -x>       // -x Luck bonus.
+ *
+ * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
+ * Description:
+ *   "Full HP Bonus" is special kind of trait that will activate whenever the
+ *   user is at full HP. You can assign rate multiplier like 125% Attack or you
+ *   can assign a static parameter bonus like +55 Agility.
+ *
+ *   Any parameter changes made by this trait will disappear as soon the user
+ *   no longer at full HP.
+ *
+ *   Multiple copies of these traits will be additive (for static parameter
+ *   bonus) and multiplicative (for rate multiplier).
  *
  * ============================================================================
  * Notetags and Plugin Commands List
@@ -261,6 +325,40 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * <TEB Ignore Counter>
  * <TEB Natural Cure: x%>
  * <TEB Spellbound: x>
+ * <TEB SPB MHP: x>
+ * <TEB SPB MHP: -x>
+ * <TEB SPB MMP: x>
+ * <TEB SPB MMP: -x>
+ * <TEB SPB ATK: x>
+ * <TEB SPB ATK: -x>
+ * <TEB SPB DEF: x>
+ * <TEB SPB DEF: -x>
+ * <TEB SPB MAT: x>
+ * <TEB SPB MAT: -x>
+ * <TEB SPB MDF: x>
+ * <TEB SPB MDF: -x>
+ * <TEB SPB AGI: x>
+ * <TEB SPB AGI: -x>
+ * <TEB SPB LUK: x>
+ * <TEB SPB LUK: -x>
+ * <TEB FHB ATK: x%>
+ * <TEB FHB DEF: x%>
+ * <TEB FHB MAT: x%>
+ * <TEB FHB MDF: x%>
+ * <TEB FHB AGI: x%>
+ * <TEB FHB LUK: x%>
+ * <TEB FHB ATK: x>
+ * <TEB FHB ATK: -x>
+ * <TEB FHB DEF: x>
+ * <TEB FHB DEF: -x>
+ * <TEB FHB MAT: x>
+ * <TEB FHB MAT: -x>
+ * <TEB FHB MDF: x>
+ * <TEB FHB MDF: -x>
+ * <TEB FHB AGI: x>
+ * <TEB FHB AGI: -x>
+ * <TEB FHB LUK: x>
+ * <TEB FHB LUK: -x>
  *
  * ============================================================================
  * Compatibility
@@ -282,6 +380,11 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.01:
+ * - Changed "Battle End Regeneration" condition to battle victory only.
+ * - Added "Static Parameter Bonus" trait.
+ * - Added "Full HP Bonus" trait.
+ *
  * Version 1.0:
  * - Completed plugin.
  *
@@ -335,6 +438,9 @@ Game_BattlerBase.TRAIT_TEB_PIERCING_MAGIC = 140; // New trait code.
 Game_BattlerBase.TRAIT_TEB_IGNORE_COUNTER = 141; // New trait code.
 Game_BattlerBase.TRAIT_TEB_NATURAL_CURE = 142; // New trait code.
 Game_BattlerBase.TRAIT_TEB_SPELLBOUND = 143; // New trait code.
+Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS = 144; // New trait code.
+Game_BattlerBase.TRAIT_TEB_FHB_RATE = 145; // New trait code.
+Game_BattlerBase.TRAIT_TEB_FHB_STATIC = 146; // New trait code.
 
 
 //=============================================================================
@@ -456,6 +562,26 @@ DataManager.readNotetags_TEB2 = function(group) {
     var note6 = /<(?:TEB IGNORE COUNTER)>/i;
     var note7 = /<(?:TEB NATURAL CURE):[ ](\d+)\%>/i;
     var note8 = /<(?:TEB SPELLBOUND):[ ](\d+)>/i;
+    var note9 = /<(?:TEB SPB MHP):[ ](.*)>/i;
+    var note10 = /<(?:TEB SPB MMP):[ ](.*)>/i;
+    var note11 = /<(?:TEB SPB ATK):[ ](.*)>/i;
+    var note12 = /<(?:TEB SPB DEF):[ ](.*)>/i;
+    var note13 = /<(?:TEB SPB MAT):[ ](.*)>/i;
+    var note14 = /<(?:TEB SPB MDF):[ ](.*)>/i;
+    var note15 = /<(?:TEB SPB AGI):[ ](.*)>/i;
+    var note16 = /<(?:TEB SPB LUK):[ ](.*)>/i;
+    var note17 = /<(?:TEB FHB ATK):[ ](\d+)\%>/i;
+    var note18 = /<(?:TEB FHB DEF):[ ](\d+)\%>/i;
+    var note19 = /<(?:TEB FHB MAT):[ ](\d+)\%>/i;
+    var note20 = /<(?:TEB FHB MDF):[ ](\d+)\%>/i;
+    var note21 = /<(?:TEB FHB AGI):[ ](\d+)\%>/i;
+    var note22 = /<(?:TEB FHB LUK):[ ](\d+)\%>/i;
+    var note23 = /<(?:TEB FHB ATK):[ ](.*)>/i;
+    var note24 = /<(?:TEB FHB DEF):[ ](.*)>/i;
+    var note25 = /<(?:TEB FHB MAT):[ ](.*)>/i;
+    var note26 = /<(?:TEB FHB MDF):[ ](.*)>/i;
+    var note27 = /<(?:TEB FHB AGI):[ ](.*)>/i;
+    var note28 = /<(?:TEB FHB LUK):[ ](.*)>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
@@ -524,6 +650,166 @@ DataManager.readNotetags_TEB2 = function(group) {
             } else if (line.match(note8)) {
                 var code = Game_BattlerBase.TRAIT_TEB_SPELLBOUND;
                 var dataId = 0;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Max HP Bonus
+            } else if (line.match(note9)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 0;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Max MP Bonus
+            } else if (line.match(note10)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 1;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Attack Bonus
+            } else if (line.match(note11)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 2;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Defense Bonus
+            } else if (line.match(note12)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 3;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Magic Attack Bonus
+            } else if (line.match(note13)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 4;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Magic Defense Bonus
+            } else if (line.match(note14)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 5;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Agility Bonus
+            } else if (line.match(note15)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 6;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Static Luck Bonus
+            } else if (line.match(note16)) {
+                var code = Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS;
+                var dataId = 7;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Rate (Attack)
+            } else if (line.match(note17)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_RATE;
+                var dataId = 2;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Rate (Defense)
+            } else if (line.match(note18)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_RATE;
+                var dataId = 3;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Rate (Magic Attack)
+            } else if (line.match(note19)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_RATE;
+                var dataId = 4;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Rate (Magic Defense)
+            } else if (line.match(note20)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_RATE;
+                var dataId = 5;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Rate (Agility)
+            } else if (line.match(note21)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_RATE;
+                var dataId = 6;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Rate (Luck)
+            } else if (line.match(note22)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_RATE;
+                var dataId = 7;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Static (Attack)
+            } else if (line.match(note23)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_STATIC;
+                var dataId = 2;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Static (Defense)
+            } else if (line.match(note24)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_STATIC;
+                var dataId = 3;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Static (Magic Attack)
+            } else if (line.match(note25)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_STATIC;
+                var dataId = 4;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Static (Magic Defense)
+            } else if (line.match(note26)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_STATIC;
+                var dataId = 5;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Static (Agility)
+            } else if (line.match(note27)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_STATIC;
+                var dataId = 6;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Full HP Bonus Static (Luck)
+            } else if (line.match(note28)) {
+                var code = Game_BattlerBase.TRAIT_TEB_FHB_STATIC;
+                var dataId = 7;
                 var value = Number(RegExp.$1);
                 var trait = [{"code":code,"dataId":dataId,"value":value}];
                 obj.traits = obj.traits.concat(trait);
@@ -599,6 +885,58 @@ Game_BattlerBase.prototype.tebNaturalCure = function() {
 
 Game_BattlerBase.prototype.tebSpellbound = function() {
     return Math.max(this.traitsSumAll(Game_BattlerBase.TRAIT_TEB_SPELLBOUND), 0);
+};
+
+Game_BattlerBase.prototype.tebStaticParamBonus = function(paramId) {
+    return this.traitsSum(Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS, paramId);
+};
+
+Moogle_X.TEB.Game_BattlerBase_initMembers =
+    Game_BattlerBase.prototype.initMembers;
+Game_BattlerBase.prototype.initMembers = function() {
+    this._tebIsFullHp = false; // Full HP flag.
+    Moogle_X.TEB.Game_BattlerBase_initMembers.call(this);
+};
+
+Moogle_X.TEB.Game_BattlerBase_refresh = Game_BattlerBase.prototype.refresh;
+Game_BattlerBase.prototype.refresh = function() {
+    Moogle_X.TEB.Game_BattlerBase_refresh.call(this);
+    if (this.hpRate() === 1) {
+        this._tebIsFullHp = true;
+    } else {
+        this._tebIsFullHp = false;
+    }
+};
+
+Game_BattlerBase.prototype.tebFhbRate = function(paramId) {
+    if (this._tebIsFullHp) {
+        return this.traitsPi(Game_BattlerBase.TRAIT_TEB_FHB_RATE, paramId);
+    } else {
+        return 1;
+    }
+};
+
+Game_BattlerBase.prototype.tebFhbStatic = function(paramId) {
+    if (this._tebIsFullHp) {
+        return this.traitsSum(Game_BattlerBase.TRAIT_TEB_FHB_STATIC, paramId);
+    } else {
+        return 0;
+    }
+};
+
+Moogle_X.TEB.Game_BattlerBase_paramRate = Game_BattlerBase.prototype.paramRate;
+Game_BattlerBase.prototype.paramRate = function(paramId) {
+    var value = Moogle_X.TEB.Game_BattlerBase_paramRate.call(this, paramId);
+    var value2 = this.tebFhbRate(paramId);
+    return value * value2;
+};
+
+Moogle_X.TEB.Game_BattlerBase_paramPlus = Game_BattlerBase.prototype.paramPlus;
+Game_BattlerBase.prototype.paramPlus = function(paramId) {
+    var value = Moogle_X.TEB.Game_BattlerBase_paramPlus.call(this, paramId);
+    var value2 = this.tebStaticParamBonus(paramId);
+    var value3 = this.tebFhbStatic(paramId);
+    return value + value2 + value3;
 };
 
 Moogle_X.TEB.Game_BattlerBase_resetStateCounts =
@@ -763,6 +1101,18 @@ Game_Party.prototype.tebPartyOverchargeRate = function() {
     return overchargeRate;
 };
 
+Game_Party.prototype.tebApplyBerAll = function() {
+    if (Moogle_X.TEB.berInactive) {
+        this.allMembers().forEach(function(member) {
+            member.tebApplyBerAll();
+        });
+    } else {
+        this.battleMembers().forEach(function(member) {
+            member.tebApplyBerAll();
+        });
+    }
+};
+
 
 //=============================================================================
 // Game_Action
@@ -876,25 +1226,13 @@ Game_Action.prototype.itemCnt = function(target) {
 
 
 //=============================================================================
-// Scene_Battle
+// BattleManager
 //=============================================================================
 
-Moogle_X.TEB.Scene_Battle_terminate = Scene_Battle.prototype.terminate;
-Scene_Battle.prototype.terminate = function() {
-    this.tebApplyBerAll();
-    Moogle_X.TEB.Scene_Battle_terminate.call(this);
-};
-
-Scene_Battle.prototype.tebApplyBerAll = function() {
-    if (Moogle_X.TEB.berInactive) {
-        $gameParty.allMembers().forEach(function(member) {
-            member.tebApplyBerAll();
-        });
-    } else {
-        $gameParty.battleMembers().forEach(function(member) {
-            member.tebApplyBerAll();
-        });
-    }
+Moogle_X.TEB.BattleManager_processVictory = BattleManager.processVictory;
+BattleManager.processVictory = function() {
+    $gameParty.tebApplyBerAll();
+    Moogle_X.TEB.BattleManager_processVictory.call(this);
 };
 
 
