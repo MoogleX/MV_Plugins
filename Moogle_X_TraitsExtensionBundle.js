@@ -12,7 +12,7 @@ Moogle_X.TEB = Moogle_X.TEB || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.01 Adds plenty of new traits to your game.
+ * @plugindesc v1.02 Adds plenty of new traits to your game.
  * @author Moogle_X
  *
  * @param Victory Cry Revival
@@ -167,6 +167,10 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  *          <TEB BER MP: -x%>     // Percentage MP decrease.
  *          <TEB BER MP: x>       // Static MP increase.
  *          <TEB BER MP: -x>      // Static MP decrease.
+ *          <TEB BER TP: x%>      // Percentage TP increase.
+ *          <TEB BER TP: -x%>     // Percentage TP decrease.
+ *          <TEB BER TP: x>       // Static TP increase.
+ *          <TEB BER TP: -x>      // Static TP decrease.
  *
  * Usable on: Actors, Classes, Weapons, Armors, States.
  * Description:
@@ -298,6 +302,77 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  *   bonus) and multiplicative (for rate multiplier).
  *
  * ============================================================================
+ * 15. Critical HP Bonus (CHB)
+ * ============================================================================
+ * Notetag: <TEB CHB ATK: x%>       // x% Attack rate multiplier.
+ *          <TEB CHB DEF: x%>       // x% Defense rate multiplier.
+ *          <TEB CHB MAT: x%>       // x% Magic Attack rate multiplier.
+ *          <TEB CHB MDF: x%>       // x% Magic Defense rate multiplier.
+ *          <TEB CHB AGI: x%>       // x% Agility rate multiplier.
+ *          <TEB CHB LUK: x%>       // x% Luck rate multiplier.
+ *
+ *          <TEB CHB ATK: x>        // +x Attack bonus.
+ *          <TEB CHB ATK: -x>       // -x Attack bonus.
+ *          <TEB CHB DEF: x>        // +x Defense bonus.
+ *          <TEB CHB DEF: -x>       // -x Defense bonus.
+ *          <TEB CHB MAT: x>        // +x Magic Attack bonus.
+ *          <TEB CHB MAT: -x>       // -x Magic Attack bonus.
+ *          <TEB CHB MDF: x>        // +x Magic Defense bonus.
+ *          <TEB CHB MDF: -x>       // -x Magic Defense bonus.
+ *          <TEB CHB AGI: x>        // +x Agility bonus.
+ *          <TEB CHB AGI: -x>       // -x Agility bonus.
+ *          <TEB CHB LUK: x>        // +x Luck bonus.
+ *          <TEB CHB LUK: -x>       // -x Luck bonus.
+ *
+ * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
+ * Description:
+ *   "Critical HP Bonus" is similar with "Full HP Bonus" trait. This trait will
+ *   activate whenever the user is at critical HP (less than 25% HP). You can
+ *   assign rate multiplier like 150% Attack or static parameter bonus like
+ *   +125 Magic Attack.
+ *
+ *   Any parameter changes made by this trait will disappear as soon the user
+ *   no longer at critical HP.
+ *
+ *   Multiple copies of these traits will be additive (for static parameter
+ *   bonus) and multiplicative (for rate multiplier).
+ *
+ * ============================================================================
+ * 16. Mana Switch
+ * ============================================================================
+ * Notetag: <TEB Mana Switch>
+ *
+ * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
+ * Description:
+ *   As long as the user possesses this trait, user's Max HP and Max MP
+ *   parameters will be switched. If the battler didn't possess this trait
+ *   previously, and then later on receive this trait by any means (from states,
+ *   equipment, passive skill, etc) the battler CURRENT HP and MP value will be
+ *   switched as well.
+ *
+ * ============================================================================
+ * 17. Power Swap
+ * ============================================================================
+ * Notetag: <TEB Power Swap>
+ *
+ * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
+ * Description:
+ *   As long as the user possesses this trait, user's Attack parameter and Magic
+ *   Attack parameter will be switched.
+ *
+ * ============================================================================
+ * 18. Guard Swap
+ * ============================================================================
+ * Notetag: <TEB Guard Swap>
+ *
+ * Usable on: Actors, Classes, Weapons, Armors, States, Enemies.
+ * Description:
+ *   As long as the user possesses this trait, user's Defense parameter and
+ *   Magic Defense parameter will be switched.
+ *
+ * Source: Pokemon (Wonder Room move).
+ *
+ * ============================================================================
  * Notetags and Plugin Commands List
  * ============================================================================
  * Actors, Classes, Weapons, Armors, and States Notetag:
@@ -313,6 +388,10 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * <TEB BER MP: -x%>
  * <TEB BER MP: x>
  * <TEB BER MP: -x>
+ * <TEB BER TP: x%>
+ * <TEB BER TP: -x%>
+ * <TEB BER TP: x>
+ * <TEB BER TP: -x>
  *
  * Actors, Classes, Weapons, Armors, States, and Enemies Notetag:
  * <TEB Catnip>
@@ -325,6 +404,10 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * <TEB Ignore Counter>
  * <TEB Natural Cure: x%>
  * <TEB Spellbound: x>
+ * <TEB Mana Switch>
+ * <TEB Power Swap>
+ * <TEB Guard Swap>
+ *
  * <TEB SPB MHP: x>
  * <TEB SPB MHP: -x>
  * <TEB SPB MMP: x>
@@ -341,6 +424,7 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * <TEB SPB AGI: -x>
  * <TEB SPB LUK: x>
  * <TEB SPB LUK: -x>
+ *
  * <TEB FHB ATK: x%>
  * <TEB FHB DEF: x%>
  * <TEB FHB MAT: x%>
@@ -359,6 +443,25 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * <TEB FHB AGI: -x>
  * <TEB FHB LUK: x>
  * <TEB FHB LUK: -x>
+ *
+ * <TEB CHB ATK: x%>
+ * <TEB CHB DEF: x%>
+ * <TEB CHB MAT: x%>
+ * <TEB CHB MDF: x%>
+ * <TEB CHB AGI: x%>
+ * <TEB CHB LUK: x%>
+ * <TEB CHB ATK: x>
+ * <TEB CHB ATK: -x>
+ * <TEB CHB DEF: x>
+ * <TEB CHB DEF: -x>
+ * <TEB CHB MAT: x>
+ * <TEB CHB MAT: -x>
+ * <TEB CHB MDF: x>
+ * <TEB CHB MDF: -x>
+ * <TEB CHB AGI: x>
+ * <TEB CHB AGI: -x>
+ * <TEB CHB LUK: x>
+ * <TEB CHB LUK: -x>
  *
  * ============================================================================
  * Compatibility
@@ -380,6 +483,13 @@ Moogle_X.TEB = Moogle_X.TEB || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.02:
+ * - Added TP regen option for "Battle End Regeneration".
+ * - Added "Critical HP Bonus" trait.
+ * - Added "Mana Switch" trait.
+ * - Added "Power Swap" trait.
+ * - Added "Guard Swap" trait.
+ *
  * Version 1.01:
  * - Changed "Battle End Regeneration" condition to battle victory only.
  * - Added "Static Parameter Bonus" trait.
@@ -441,6 +551,13 @@ Game_BattlerBase.TRAIT_TEB_SPELLBOUND = 143; // New trait code.
 Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS = 144; // New trait code.
 Game_BattlerBase.TRAIT_TEB_FHB_RATE = 145; // New trait code.
 Game_BattlerBase.TRAIT_TEB_FHB_STATIC = 146; // New trait code.
+Game_BattlerBase.TRAIT_TEB_BER_TP_STATIC = 147; // New trait code.
+Game_BattlerBase.TRAIT_TEB_BER_TP_PERCENTAGE = 148; // New trait code.
+Game_BattlerBase.TRAIT_TEB_CHB_RATE = 149; // New trait code.
+Game_BattlerBase.TRAIT_TEB_CHB_STATIC = 150; // New trait code.
+Game_BattlerBase.TRAIT_TEB_MANA_SWITCH = 151; // New trait code.
+Game_BattlerBase.TRAIT_TEB_POWER_SWAP = 152; // New trait code.
+Game_BattlerBase.TRAIT_TEB_GUARD_SWAP = 153; // New trait code.
 
 
 //=============================================================================
@@ -477,6 +594,8 @@ DataManager.readNotetags_TEB1 = function(group) {
     var note6 = /<(?:TEB BER HP):[ ](.*)>/i;
     var note7 = /<(?:TEB BER MP):[ ](.*)\%>/i;
     var note8 = /<(?:TEB BER MP):[ ](.*)>/i;
+    var note9 = /<(?:TEB BER TP):[ ](.*)\%>/i;
+    var note10 = /<(?:TEB BER TP):[ ](.*)>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
@@ -548,6 +667,22 @@ DataManager.readNotetags_TEB1 = function(group) {
                 var value = Number(RegExp.$1);
                 var trait = [{"code":code,"dataId":dataId,"value":value}];
                 obj.traits = obj.traits.concat(trait);
+
+            // Battle End Regeneration (TP Percentage)
+            } else if (line.match(note9)) {
+                var code = Game_BattlerBase.TRAIT_TEB_BER_TP_PERCENTAGE;
+                var dataId = 0;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Battle End Regeneration (TP Static)
+            } else if (line.match(note10)) {
+                var code = Game_BattlerBase.TRAIT_TEB_BER_TP_STATIC;
+                var dataId = 0;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
             }
 		    }
 	  }
@@ -582,6 +717,21 @@ DataManager.readNotetags_TEB2 = function(group) {
     var note26 = /<(?:TEB FHB MDF):[ ](.*)>/i;
     var note27 = /<(?:TEB FHB AGI):[ ](.*)>/i;
     var note28 = /<(?:TEB FHB LUK):[ ](.*)>/i;
+    var note29 = /<(?:TEB CHB ATK):[ ](\d+)\%>/i;
+    var note30 = /<(?:TEB CHB DEF):[ ](\d+)\%>/i;
+    var note31 = /<(?:TEB CHB MAT):[ ](\d+)\%>/i;
+    var note32 = /<(?:TEB CHB MDF):[ ](\d+)\%>/i;
+    var note33 = /<(?:TEB CHB AGI):[ ](\d+)\%>/i;
+    var note34 = /<(?:TEB CHB LUK):[ ](\d+)\%>/i;
+    var note35 = /<(?:TEB CHB ATK):[ ](.*)>/i;
+    var note36 = /<(?:TEB CHB DEF):[ ](.*)>/i;
+    var note37 = /<(?:TEB CHB MAT):[ ](.*)>/i;
+    var note38 = /<(?:TEB CHB MDF):[ ](.*)>/i;
+    var note39 = /<(?:TEB CHB AGI):[ ](.*)>/i;
+    var note40 = /<(?:TEB CHB LUK):[ ](.*)>/i;
+    var note41 = /<(?:TEB MANA SWITCH)>/i;
+    var note42 = /<(?:TEB POWER SWAP)>/i;
+    var note43 = /<(?:TEB GUARD SWAP)>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
@@ -813,6 +963,126 @@ DataManager.readNotetags_TEB2 = function(group) {
                 var value = Number(RegExp.$1);
                 var trait = [{"code":code,"dataId":dataId,"value":value}];
                 obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Rate (Attack)
+            } else if (line.match(note29)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_RATE;
+                var dataId = 2;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Rate (Defense)
+            } else if (line.match(note30)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_RATE;
+                var dataId = 3;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Rate (Magic Attack)
+            } else if (line.match(note31)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_RATE;
+                var dataId = 4;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Rate (Magic Defense)
+            } else if (line.match(note32)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_RATE;
+                var dataId = 5;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Rate (Agility)
+            } else if (line.match(note33)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_RATE;
+                var dataId = 6;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Rate (Luck)
+            } else if (line.match(note34)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_RATE;
+                var dataId = 7;
+                var value = Number(RegExp.$1) / 100;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Static (Attack)
+            } else if (line.match(note35)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_STATIC;
+                var dataId = 2;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Static (Defense)
+            } else if (line.match(note36)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_STATIC;
+                var dataId = 3;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Static (Magic Attack)
+            } else if (line.match(note37)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_STATIC;
+                var dataId = 4;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Static (Magic Defense)
+            } else if (line.match(note38)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_STATIC;
+                var dataId = 5;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Static (Agility)
+            } else if (line.match(note39)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_STATIC;
+                var dataId = 6;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Critical HP Bonus Static (Luck)
+            } else if (line.match(note40)) {
+                var code = Game_BattlerBase.TRAIT_TEB_CHB_STATIC;
+                var dataId = 7;
+                var value = Number(RegExp.$1);
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Mana Switch
+            } else if (line.match(note41)) {
+                var code = Game_BattlerBase.TRAIT_SPECIAL_FLAG;
+                var dataId = Game_BattlerBase.TRAIT_TEB_MANA_SWITCH;
+                var value = 0;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Power Swap
+            } else if (line.match(note42)) {
+                var code = Game_BattlerBase.TRAIT_SPECIAL_FLAG;
+                var dataId = Game_BattlerBase.TRAIT_TEB_POWER_SWAP;
+                var value = 0;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
+
+            // Guard Swap
+            } else if (line.match(note43)) {
+                var code = Game_BattlerBase.TRAIT_SPECIAL_FLAG;
+                var dataId = Game_BattlerBase.TRAIT_TEB_GUARD_SWAP;
+                var value = 0;
+                var trait = [{"code":code,"dataId":dataId,"value":value}];
+                obj.traits = obj.traits.concat(trait);
             }
 		    }
 	  }
@@ -871,6 +1141,14 @@ Game_BattlerBase.prototype.tebBerMpPercentage = function() {
     return this.traitsSumAll(Game_BattlerBase.TRAIT_TEB_BER_MP_PERCENTAGE);
 };
 
+Game_BattlerBase.prototype.tebBerTpStatic = function() {
+    return this.traitsSumAll(Game_BattlerBase.TRAIT_TEB_BER_TP_STATIC);
+};
+
+Game_BattlerBase.prototype.tebBerTpPercentage = function() {
+    return this.traitsSumAll(Game_BattlerBase.TRAIT_TEB_BER_TP_PERCENTAGE);
+};
+
 Game_BattlerBase.prototype.tebPiercingMagic = function() {
     return this.specialFlag(Game_BattlerBase.TRAIT_TEB_PIERCING_MAGIC);
 };
@@ -891,20 +1169,110 @@ Game_BattlerBase.prototype.tebStaticParamBonus = function(paramId) {
     return this.traitsSum(Game_BattlerBase.TRAIT_TEB_STATIC_PARAMETER_BONUS, paramId);
 };
 
+Game_BattlerBase.prototype.tebManaSwitch = function() {
+    return this.specialFlag(Game_BattlerBase.TRAIT_TEB_MANA_SWITCH);
+};
+
+Game_BattlerBase.prototype.tebPowerSwap = function() {
+    return this.specialFlag(Game_BattlerBase.TRAIT_TEB_POWER_SWAP);
+};
+
+Game_BattlerBase.prototype.tebGuardSwap = function() {
+    return this.specialFlag(Game_BattlerBase.TRAIT_TEB_GUARD_SWAP);
+};
+
 Moogle_X.TEB.Game_BattlerBase_initMembers =
     Game_BattlerBase.prototype.initMembers;
 Game_BattlerBase.prototype.initMembers = function() {
     this._tebIsFullHp = false; // Full HP flag.
+    this._tebIsCriticalHp = false; // Critical HP flag.
+    this._tebIsAlreadyManaSwitched = false;
     Moogle_X.TEB.Game_BattlerBase_initMembers.call(this);
 };
 
 Moogle_X.TEB.Game_BattlerBase_refresh = Game_BattlerBase.prototype.refresh;
 Game_BattlerBase.prototype.refresh = function() {
+    this.tebCheckManaSwitch();
     Moogle_X.TEB.Game_BattlerBase_refresh.call(this);
     if (this.hpRate() === 1) {
         this._tebIsFullHp = true;
     } else {
         this._tebIsFullHp = false;
+    }
+    if (this.hpRate() < 0.25) {
+        this._tebIsCriticalHp = true;
+    } else {
+        this._tebIsCriticalHp = false;
+    }
+};
+
+Game_BattlerBase.prototype.tebCheckManaSwitch = function() {
+    if (this.tebManaSwitch()) {
+        if (!this._tebIsAlreadyManaSwitched) {
+            this.tebSwitchCurrentHpMp();
+            this._tebIsAlreadyManaSwitched = true;
+        }
+    } else if (!this.tebManaSwitch()) {
+        if (this._tebIsAlreadyManaSwitched) {
+            this.tebSwitchCurrentHpMp();
+            this._tebIsAlreadyManaSwitched = false;
+        }
+    }
+};
+
+Game_BattlerBase.prototype.tebSwitchCurrentHpMp = function() {
+    var oldHp = this._hp;
+    var oldMp = this._mp;
+    this._hp = oldMp;
+    this._mp = oldHp;
+};
+
+Moogle_X.TEB.Game_BattlerBase_param = Game_BattlerBase.prototype.param;
+Game_BattlerBase.prototype.param = function(paramId) {
+    if (this.tebManaSwitch() && (paramId === 0 || paramId === 1)) {
+        switch (paramId) {
+        case 0:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, 1);
+            break;
+
+        case 1:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, 0);
+            break;
+
+        default:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, paramId);
+        }
+
+    } else if (this.tebPowerSwap() && (paramId === 2 || paramId === 4)) {
+        switch (paramId) {
+        case 2:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, 4);
+            break;
+
+        case 4:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, 2);
+            break;
+
+        default:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, paramId);
+        }
+
+    } else if (this.tebGuardSwap() && (paramId === 3 || paramId === 5)) {
+        switch (paramId) {
+        case 3:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, 5);
+            break;
+
+        case 5:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, 3);
+            break;
+
+        default:
+            return Moogle_X.TEB.Game_BattlerBase_param.call(this, paramId);
+        }
+
+    } else {
+        return Moogle_X.TEB.Game_BattlerBase_param.call(this, paramId);
     }
 };
 
@@ -924,11 +1292,28 @@ Game_BattlerBase.prototype.tebFhbStatic = function(paramId) {
     }
 };
 
+Game_BattlerBase.prototype.tebChbRate = function(paramId) {
+    if (this._tebIsCriticalHp) {
+        return this.traitsPi(Game_BattlerBase.TRAIT_TEB_CHB_RATE, paramId);
+    } else {
+        return 1;
+    }
+};
+
+Game_BattlerBase.prototype.tebChbStatic = function(paramId) {
+    if (this._tebIsCriticalHp) {
+        return this.traitsSum(Game_BattlerBase.TRAIT_TEB_CHB_STATIC, paramId);
+    } else {
+        return 0;
+    }
+};
+
 Moogle_X.TEB.Game_BattlerBase_paramRate = Game_BattlerBase.prototype.paramRate;
 Game_BattlerBase.prototype.paramRate = function(paramId) {
     var value = Moogle_X.TEB.Game_BattlerBase_paramRate.call(this, paramId);
     var value2 = this.tebFhbRate(paramId);
-    return value * value2;
+    var value3 = this.tebChbRate(paramId);
+    return value * value2 * value3;
 };
 
 Moogle_X.TEB.Game_BattlerBase_paramPlus = Game_BattlerBase.prototype.paramPlus;
@@ -936,7 +1321,8 @@ Game_BattlerBase.prototype.paramPlus = function(paramId) {
     var value = Moogle_X.TEB.Game_BattlerBase_paramPlus.call(this, paramId);
     var value2 = this.tebStaticParamBonus(paramId);
     var value3 = this.tebFhbStatic(paramId);
-    return value + value2 + value3;
+    var value4 = this.tebChbStatic(paramId);
+    return value + value2 + value3 + value4;
 };
 
 Moogle_X.TEB.Game_BattlerBase_resetStateCounts =
@@ -1063,6 +1449,7 @@ Game_Actor.prototype.tebApplyInitBattleStateParty = function() {
 Game_Actor.prototype.tebApplyBerAll = function() {
     this.tebApplyBerHp();
     this.tebApplyBerMp();
+    this.tebApplyBerTp();
 };
 
 Game_Actor.prototype.tebApplyBerHp = function() {
@@ -1080,10 +1467,23 @@ Game_Actor.prototype.tebApplyBerMp = function() {
     this.setMp(this.mp + total);
 };
 
+Game_Actor.prototype.tebApplyBerTp = function() {
+    var berPercent = this.maxTp() * this.tebBerTpPercentage();
+    var berStatic = this.tebBerTpStatic();
+    var total = Math.floor(berPercent + berStatic);
+    this.setTp(this.tp + total);
+};
+
 
 //=============================================================================
 // Game_Party
 //=============================================================================
+
+Moogle_X.TEB.Game_Party_initialize = Game_Party.prototype.initialize;
+Game_Party.prototype.initialize = function() {
+    Moogle_X.TEB.Game_Party_initialize.call(this);
+    this._tebAlreadyApplyBer = false;
+};
 
 Game_Party.prototype.tebPartyDiscountRate = function() {
     var discountRate = 0;
@@ -1111,6 +1511,7 @@ Game_Party.prototype.tebApplyBerAll = function() {
             member.tebApplyBerAll();
         });
     }
+    this._tebAlreadyApplyBer = true;
 };
 
 
@@ -1231,8 +1632,20 @@ Game_Action.prototype.itemCnt = function(target) {
 
 Moogle_X.TEB.BattleManager_processVictory = BattleManager.processVictory;
 BattleManager.processVictory = function() {
-    $gameParty.tebApplyBerAll();
+    if (!$gameParty._tebAlreadyApplyBer) {
+        $gameParty.tebApplyBerAll();
+    }
     Moogle_X.TEB.BattleManager_processVictory.call(this);
+};
+
+//=============================================================================
+// Scene_Battle
+//=============================================================================
+
+Moogle_X.TEB.Scene_Battle_terminate = Scene_Battle.prototype.terminate;
+Scene_Battle.prototype.terminate = function() {
+    Moogle_X.TEB.Scene_Battle_terminate.call(this);
+    $gameParty._tebAlreadyApplyBer = false;
 };
 
 
