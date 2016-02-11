@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.44 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.45 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Limit
@@ -25,6 +25,17 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  *
  * @param Party Based Skill Pool
  * @desc Skill pool will show all party's skills instead of user's skills only. 1:Yes 0:No
+ * @default 0
+ *
+ * @param ---EQS Class Restriction---
+ * @default
+ *
+ * @param Apply EQS Class Restriction
+ * @desc Apply additional skill equip restriction based on class/subclass? 1:Yes 0:No
+ * @default 0
+ *
+ * @param Legal Skill List
+ * @desc This is the list of skill id(s) that always be "legal" for all classes. Example: 16 20 48 59
  * @default 0
  *
  * @param ---Scene---
@@ -489,7 +500,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * There are 31 different Slot Types available in this plugin.
  * It starts from Slot Type 0 to Slot Type 30.
  * Each Slot Type has its own different name and color that you can customize
- * in the plugin configurations.
+ * in the plugin configuration.
  *
  * You must assign every skill in your database into a Slot Type.
  * Simply insert this notetag into the skill's notebox.
@@ -760,6 +771,45 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  *                              // equipped in one of their Skill Slots.
  *
  * ============================================================================
+ * NEW Feature! "EQS Class Restriction"
+ * ============================================================================
+ * Do you want to limit which skills can be equipped based on class/subclasses?
+ * With "EQS Class Restriction" feature, you can add extra layer of restriction
+ * on actor's skill equip.
+ *
+ * First, you need to turn on the plugin parameter "Apply EQS Class Restriction"
+ * before anything else. "EQS Class Restriction" cannot co-exist with parameter
+ * "Party Based Skill Pool"! If you turn on "Party Based Skill Pool" parameter,
+ * you cannot use "EQS Class Restriction" feature at all.
+ *
+ * Next, you need to define the list of Legal Skills for each available class.
+ * Legal Skills are the only skills that can be equipped at any given time
+ * when particular class is active.
+ *
+ * If you use YEP_X_Subclass plugin, Legal Skills from actor's main class will
+ * be "combined" with the actor's subclass.
+ *
+ * Only Legal Skills will show up on the Skill Pool Window. Any "illegal" skills
+ * will simply be hidden.
+ *
+ * Whenever the actor changes their main class or subclass, the actor will
+ * automatically unequip any "illegal" skills from their Skill Slots.
+ *
+ * To define class/subclass' Legal Skills, insert this notetag into the classes'
+ * notebox:
+ *
+ * <EQS Skills: x, y, z>            // This class's Legal Skills are x, y, z.
+ *
+ * Example:
+ * <EQS Skills: 8, 35, 52, 80, 99>  // The Legal Skills for this class/subclass
+ *                                  // are skills 8, 35, 52, 80, 99.
+ *
+ * What if you want some skills to be always "legal" for all classes/subclasses?
+ * Just insert the skill id(s) into "Legal Skill List" parameter in the plugin
+ * configuration. Any skills inside that parameter will not be affected by
+ * "EQS Class Restriction".
+ *
+ * ============================================================================
  * Notetags and Plugin Commands List
  * ============================================================================
  * Actors Notetags:
@@ -783,8 +833,11 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * <EQS Slot Grow x: y>
  * <EQS Limit Grow: x>
  *
- * Actors and Classes Notetags:
+ * Actors and Classes Notetag:
  * <EQS Hide>
+ *
+ * Classes Notetag:
+ * <EQS Skills: x, y, z>
  *
  * Plugin Commands:
  * EQS Actor x Type y Slot z Skill n
@@ -810,6 +863,8 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * If you use Moogle_X_PassiveSkill plugin, position this plugin above it.
  * If you use YEP_AutoPassiveStates, position this plugin below it.
  * If you use Moogle_X_EquipmentLearning, position this plugin above it.
+ * If you use YEP_ClassChangeCore or YEP_X_Subclass, position this plugin below
+ * those plugins.
  *
  * ============================================================================
  * Terms of Use
@@ -820,6 +875,9 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.45:
+ * - Added optional "EQS Class Restriction" feature.
+ *
  * Version 1.44:
  * - Added "Party Based Skill Pool" parameter.
  *
@@ -880,6 +938,19 @@ Moogle_X.EQS.eqSeVolume = Number(Moogle_X.EQS.parameters['Equip SE Volume'] || 0
 Moogle_X.EQS.eqSePitch = Number(Moogle_X.EQS.parameters['Equip SE Pitch'] || 0);
 Moogle_X.EQS.eqSePan = Number(Moogle_X.EQS.parameters['Equip SE Pan'] || 0);
 Moogle_X.EQS.partySkillPool = Number(Moogle_X.EQS.parameters['Party Based Skill Pool']) != 0;
+Moogle_X.EQS.classRestrict = Number(Moogle_X.EQS.parameters['Apply EQS Class Restriction']) != 0;
+Moogle_X.EQS.legalSkills = String(Moogle_X.EQS.parameters['Legal Skill List'] || 0);
+
+if (Moogle_X.EQS.partySkillPool) {
+    // "Party Based Skill Pool" cannot co-exist with "EQS Class Restriction".
+    Moogle_X.EQS.classRestrict = false;
+}
+
+var legalSkillIds = Moogle_X.EQS.legalSkills.split(' ');
+Moogle_X.EQS.legalSkills = [];
+for (var i = 0; i < legalSkillIds.length; i++) {
+    Moogle_X.EQS.legalSkills.push(Number(legalSkillIds[i]));
+}
 
 // Slot Types variables.
 
@@ -1093,6 +1164,7 @@ DataManager.isDatabaseLoaded = function() {
         DataManager.readNotetags_EQS4($dataSkills);
         DataManager.readNotetags_EQS5($dataActors);
         DataManager.readNotetags_EQS5($dataClasses);
+        DataManager.readNotetags_EQS6($dataClasses);
         Moogle_X.EQS.DatabaseLoaded = true;
     }
 		return true;
@@ -1271,6 +1343,25 @@ DataManager.readNotetags_EQS5 = function(group) {
 	  }
 };
 
+DataManager.readNotetags_EQS6 = function(group) {
+    var note = /<(?:EQS SKILLS):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
+
+	  for (var n = 1; n < group.length; n++) {
+		    var obj = group[n];
+		    var notedata = obj.note.split(/[\r\n]+/);
+
+        obj.eqsClassSkills = [];
+
+		    for (var i = 0; i < notedata.length; i++) {
+			      var line = notedata[i];
+			      if (line.match(note)) {
+                var skills = JSON.parse('[' + RegExp.$1.match(/\d+/g) + ']');
+                obj.eqsClassSkills = skills;
+            }
+		    }
+	  }
+};
+
 
 //=============================================================================
 // Game_Actor
@@ -1399,7 +1490,44 @@ Game_Actor.prototype.getSkillPool = function(typeId) {
     array = array.filter(function(skill) {
         return skill.isEqsIgnore === false;
     });
+
+    if (Moogle_X.EQS.classRestrict) {
+        var legalSkills = this.eqsGetLegalSkills();
+        array = array.filter(function(skill) {
+            return legalSkills.contains(skill.id);
+        });
+    }
+
     return array;
+};
+
+Game_Actor.prototype.eqsGetLegalSkills = function() {
+    var legalSkills = [];
+
+    var classSkills = this.currentClass().eqsClassSkills;
+    if (classSkills) {
+        legalSkills = classSkills;
+    }
+
+    if (Imported.YEP_X_Subclass) {
+        if (this.subclass()) {
+            var subSkills = this.subclass().eqsClassSkills;
+            if (subSkills) {
+                legalSkills = legalSkills.concat(subSkills);
+            }
+        }
+    }
+
+    var skills = [];
+
+    legalSkills = legalSkills.concat(Moogle_X.EQS.legalSkills);
+    legalSkills.forEach(function(skillId) {
+        if (!skills.contains(skillId)) {
+            skills.push(skillId);
+        }
+    });
+
+    return skills;
 };
 
 Game_Actor.prototype.eqsEquipSkill = function(skill, typeId, slotId) {
@@ -1432,7 +1560,18 @@ Game_Actor.prototype.canEquipSkill = function(skill) {
         return true;
     }
     if (this.canPayEqsCost(skill) && !this.eqsSkillEquipped(skill) &&
-        this.eqsIsLearnedSkill(skill.id) && !skill.isEqsIgnore) {
+        this.eqsIsLearnedSkill(skill.id) && !skill.isEqsIgnore &&
+        this.eqsIsLegalSkill(skill)) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+Game_Actor.prototype.eqsIsLegalSkill = function(skill) {
+    if (!Moogle_X.EQS.classRestrict) return true;
+    var legalSkills = this.eqsGetLegalSkills();
+    if (legalSkills.contains(skill.id)) {
         return true;
     } else {
         return false;
