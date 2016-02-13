@@ -427,6 +427,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * - Added window compatibility fix with YEP_EquipCore v1.09.
  * - Added "New Skill Offset Y" parameter.
  * - Added "New Skill Display Limit" parameter.
+ * - Added touch input for Scene Item (Yanfly's Item Core version).
  *
  * Version 1.21:
  * - Added "Display Added Skills" parameter.
@@ -1511,6 +1512,51 @@ if (Imported.YEP_ItemCore && eval(Yanfly.Param.ItemSceneItem)) {
         if (this._eqlAbilityWindow) this._eqlAbilityWindow._hArrowsHide = false;
         this._Moogle_X_hIndex = this._Moogle_X_hIndex || 1;
         this._Moogle_X_hRestrict = false;
+    };
+
+    Moogle_X.EQL.Scene_Item_update = Scene_Item.prototype.update;
+    Scene_Item.prototype.update = function() {
+        Moogle_X.EQL.Scene_Item_update.call(this);
+        this.eqlUpdateLowerRightWindowTouch();
+    };
+
+    Scene_Item.prototype.eqlUpdateLowerRightWindowTouch = function() {
+        if (this._Moogle_X_hRestrict) return;
+        var result = this.eqlIsLowerRightWindowTouched();
+        switch (result) {
+        case 'left':
+          this.goLeftMoogleXhPages();
+          break;
+
+        case 'right':
+          this.goRightMoogleXhPages();
+          break;
+        }
+    };
+
+    Scene_Item.prototype.eqlIsLowerRightWindowTouched = function() {
+        if (!TouchInput.isTriggered()) return false;
+        var x = TouchInput.x;
+        var y = TouchInput.y;
+        var rect = new Rectangle();
+        rect.x = this._eqlAbilityWindow.x;
+        rect.y = this._eqlAbilityWindow.y;
+        rect.width = this._eqlAbilityWindow.x + this._eqlAbilityWindow.width;
+        rect.height = this._eqlAbilityWindow.y + this._eqlAbilityWindow.height;
+        if (x >= rect.x && y >= rect.y && x < rect.width && y < rect.height) {
+            var areaWidth = this._eqlAbilityWindow.x +
+                this._eqlAbilityWindow.width / 2;
+            if (x < areaWidth) {
+                return 'left';
+            } else if (x > areaWidth) {
+                return 'right';
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
     };
 
 //=============================================================================
