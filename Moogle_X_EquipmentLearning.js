@@ -12,7 +12,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.21 Allows actors to learn skill from equipment.
+ * @plugindesc v1.22 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
@@ -142,6 +142,14 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * @param Show Aftermath New Skill
  * @desc Display new learned skills in Victory Aftermath AP window? 1:Yes 0:No
  * @default 1
+ *
+ * @param New Skill Offset Y
+ * @desc Change the offset Y value of new skill name. (Positive: down; Negative: up)
+ * @default 0
+ *
+ * @param New Skill Display Limit
+ * @desc Change maximum number of new skill display in Victory Aftermath.
+ * @default 4
  *
  * @param ---Custom Scroll Images---
  * @default
@@ -415,6 +423,11 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.22:
+ * - Added window compatibility fix with YEP_EquipCore v1.09.
+ * - Added "New Skill Offset Y" parameter.
+ * - Added "New Skill Display Limit" parameter.
+ *
  * Version 1.21:
  * - Added "Display Added Skills" parameter.
  * - Added "No AP Gain Skill List" parameter.
@@ -490,6 +503,8 @@ Moogle_X.EQL.skillNameY = Number(Moogle_X.EQL.parameters['Skill Name Offset Y'] 
 Moogle_X.EQL.apTextOffsetX = Number(Moogle_X.EQL.parameters['AP Text Offset X'] || 0);
 Moogle_X.EQL.showAddedSkills = Number(Moogle_X.EQL.parameters['Display Added Skills']) != 0;
 Moogle_X.EQL.noApGainList = String(Moogle_X.EQL.parameters['No AP Gain Skill List'] || 0);
+Moogle_X.EQL.newSkillOffsetY = Number(Moogle_X.EQL.parameters['New Skill Offset Y'] || 0);
+Moogle_X.EQL.newSkillLimit = Number(Moogle_X.EQL.parameters['New Skill Display Limit'] || 0);
 
 var noApSkillIds = Moogle_X.EQL.noApGainList.split(' ');
 Moogle_X.EQL.noApGainList = [];
@@ -981,7 +996,9 @@ Game_Actor.prototype.eqlCheckMastery = function(skillId) {
     if ($gameParty.inBattle()) {
         if (this.isLearnedSkill(skillId) && !checkSkillPrev) {
             if (!this._eqlNewSkill.contains(skillId) && !$dataSkills[skillId].eqlNoAft) {
-                this._eqlNewSkill.push(skillId);
+                if (this._eqlNewSkill.length < Moogle_X.EQL.newSkillLimit) {
+                    this._eqlNewSkill.push(skillId);
+                }
             }
         }
     }
@@ -1363,7 +1380,8 @@ Window_EqlVictoryAp.prototype.drawApGained = function(actor, rect) {
 Window_EqlVictoryAp.prototype.drawGainedSkills = function(actor, rect) {
     if (actor.eqlNewSkill().length <= 0) return;
     if (!this.meetDrawGainedSkillsCondition(actor)) return;
-    var wy = rect.y;
+    var wy = rect.y + Moogle_X.EQL.newSkillOffsetY;
+
     for (var i = 0; i < actor.eqlNewSkill().length; ++i) {
         if (wy + this.lineHeight() > rect.y + rect.height) break;
         var skillId = actor.eqlNewSkill()[i];
@@ -1431,6 +1449,7 @@ Scene_Battle.prototype.eqlFinishVictoryAp = function() {
 };
 
 }; // Imported.YEP_VictoryAftermath
+
 
 //=============================================================================
 // Scene_Item
@@ -1508,8 +1527,16 @@ Window_ItemInfo.prototype.customMoogleXhArrowsHide = function() {
     return this._hArrowsHide;
 };
 
-} // Yanfly Item Core compatibility.
+Window_ItemInfo.prototype.updateMoogleXhArrows = function(sceneIndex, scenePages) {
+    if (Imported.YEP_EquipCore && SceneManager._scene instanceof Scene_Equip) {
+        this._Moogle_X_leftArrowVisible = !this.customMoogleXhArrowsHide();
+        this._Moogle_X_rightArrowVisible = !this.customMoogleXhArrowsHide();
+    } else {
+        Window_Base.prototype.updateMoogleXhArrows.call(this, sceneIndex, scenePages);
+    }
+};
 
+} // Yanfly Item Core compatibility.
 
 
 //=============================================================================
@@ -1601,12 +1628,37 @@ Scene_Equip.prototype.create = function() {
     this.refreshActor();
 };
 
-Scene_Equip.prototype.eqlCreateAbilityWindow = function() {
+if (Imported.YEP_EquipCore) {
+
+Moogle_X.EQL.Scene_Equip_createCompareWindow =
+    Scene_Equip.prototype.createCompareWindow;
+Scene_Equip.prototype.createCompareWindow = function() {
+    Moogle_X.EQL.Scene_Equip_createCompareWindow.call(this);
     var x = Graphics.boxWidth / 2;
     var y = this._itemWindow.y;
     var w = Graphics.boxWidth / 2;
     var h = this._itemWindow.height;
     this._eqlAbilityWindow = new Window_EqlAbilityList(x, y, w, h);
+    this._slotWindow.eqlSetAbilityWindow(this._eqlAbilityWindow);
+    this._itemWindow.eqlSetAbilityWindow(this._eqlAbilityWindow);
+    this.addWindow(this._eqlAbilityWindow);
+    this._lowerRightWindows.push(this._eqlAbilityWindow);
+};
+
+} // Imported.YEP_EquipCore
+
+
+Scene_Equip.prototype.eqlCreateAbilityWindow = function() {
+    if (Imported.YEP_EquipCore) return; // YEP_EquipCore v1.09 fix.
+
+    var x = Graphics.boxWidth / 2;
+    var y = this._itemWindow.y;
+    var w = Graphics.boxWidth / 2;
+    var h = this._itemWindow.height;
+    this._eqlAbilityWindow = new Window_EqlAbilityList(x, y, w, h);
+
+    // Because of YEP_EquipCore v1.09, this part is now disabled.
+    /*
     if (Imported.YEP_EquipCore) {
         this.registerMoogleXhWindow(this._compareWindow);
         this._Moogle_X_hIndex = 1;
@@ -1614,6 +1666,8 @@ Scene_Equip.prototype.eqlCreateAbilityWindow = function() {
         this._compareWindow._hArrowsHide = true;
         this._eqlAbilityWindow._hArrowsHide = true;
     }
+    */
+
     this.registerMoogleXhWindow(this._eqlAbilityWindow);
     this._slotWindow.eqlSetAbilityWindow(this._eqlAbilityWindow);
     this._itemWindow.eqlSetAbilityWindow(this._eqlAbilityWindow);
@@ -1636,6 +1690,7 @@ Scene_Equip.prototype.commandEquip = function() {
     if (Imported.YEP_EquipCore) {
         this._Moogle_X_hIndex = 1;
         this._compareWindow._hArrowsHide = false;
+        this._infoWindow._hArrowsHide = false;
         this._eqlAbilityWindow._hArrowsHide = false;
         this._Moogle_X_hRestrict = false;
     }
@@ -1648,11 +1703,30 @@ Scene_Equip.prototype.onSlotCancel = function() {
     this._Moogle_X_hIndex = 0;
     if (Imported.YEP_EquipCore) {
         this._Moogle_X_hIndex = 1;
-        this._compareWindow._hArrowsHide = true;
-        this._eqlAbilityWindow._hArrowsHide = true;
+        //this._compareWindow._hArrowsHide = true;
+        //this._infoWindow._hArrowsHide = true;
+        //this._eqlAbilityWindow._hArrowsHide = true;
         this._Moogle_X_hRestrict = true;
     }
+    this._eqlAbilityWindow.eqlSetItem(null);
     Moogle_X.EQL.Scene_Equip_onSlotCancel.call(this);
+};
+
+Scene_Equip.prototype.updateMoogleXhArrows = function() {
+    if (Imported.YEP_EquipCore) {
+        if (!this._lowerRightWindows) return;
+        if (this._lowerRightWindows.length > 0) {
+            this._lowerRightWindows.forEach(function(hWindow) {
+                hWindow.updateMoogleXhArrows(this.MoogleXhIndex(),
+                    this.MoogleXhPages());
+                hWindow.updateMoogleXhVisible(this.MoogleXhIndex(),
+                    this.MoogleXhPages());
+            }, this);
+        }
+
+    } else {
+        Scene_Base.prototype.updateMoogleXhArrows.call(this);
+    }
 };
 
 //=============================================================================
@@ -1697,6 +1771,11 @@ Window_StatCompare.prototype.initialize = function(wx, wy, ww, wh) {
 
 Window_StatCompare.prototype.customMoogleXhArrowsHide = function() {
     return this._hArrowsHide;
+};
+
+Window_StatCompare.prototype.updateMoogleXhArrows = function(sceneIndex, scenePages) {
+    this._Moogle_X_leftArrowVisible = !this.customMoogleXhArrowsHide();
+    this._Moogle_X_rightArrowVisible = !this.customMoogleXhArrowsHide();
 };
 
 } // Imported.YEP_EquipCore
@@ -2262,6 +2341,16 @@ Window_EqlAbilityList.prototype.eqlAdjustMasteryYanflyItemCore = function(eqlAct
 
     return eqlActor;
 };
+
+Window_EqlAbilityList.prototype.updateMoogleXhArrows = function(sceneIndex, scenePages) {
+    if (Imported.YEP_EquipCore && SceneManager._scene instanceof Scene_Equip) {
+        this._Moogle_X_leftArrowVisible = !this.customMoogleXhArrowsHide();
+        this._Moogle_X_rightArrowVisible = !this.customMoogleXhArrowsHide();
+    } else {
+        Window_Base.prototype.updateMoogleXhArrows.call(this, sceneIndex, scenePages);
+    }
+};
+
 
 (function() { // IIFE
 
