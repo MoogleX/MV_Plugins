@@ -12,7 +12,7 @@ Moogle_X.AFS = Moogle_X.AFS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v2.07 Adds friendship mechanic between actors.
+ * @plugindesc v2.08 Adds friendship mechanic between actors.
  * @author Moogle_X
  *
  * @param Default All Leaders
@@ -752,6 +752,9 @@ Moogle_X.AFS = Moogle_X.AFS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 2.08:
+ * - Added Shaz's fix for memory leak issue.
+ *
  * Version 2.07:
  * - Fixed multiple friendship common events bug (common events not stacking).
  *
@@ -1749,8 +1752,10 @@ Window_ActorsFriendship.prototype.initialize = function(x, y, width, height) {
 };
 
 Window_ActorsFriendship.prototype.setLeader = function(leader) {
-    this._leader = leader;
-    this.refresh();
+  if (this._leader !== leader) { // Shaz's fix for memory leak.
+     this._leader = leader;
+     this.refresh();
+   }
 };
 
 Window_ActorsFriendship.prototype.maxItems = function() {
