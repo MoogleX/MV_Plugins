@@ -12,7 +12,7 @@ Moogle_X.EQS = Moogle_X.EQS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.45 Adds equip skill system mechanic to actors.
+ * @plugindesc v1.46 Adds equip skill system mechanic to actors.
  * @author Moogle_X
  *
  * @param Default Max Limit
@@ -875,6 +875,9 @@ Moogle_X.EQS = Moogle_X.EQS || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.46:
+ * - Added waynee95's bug fix for crashing during skill equip.
+ *
  * Version 1.45:
  * - Added optional "EQS Class Restriction" feature.
  *
@@ -2292,6 +2295,7 @@ Window_EquipSkillPool.prototype.refresh = function() {
 };
 
 Window_EquipSkillPool.prototype.setTypeId = function(typeId) {
+    if (this._typeId === typeId) return; // waynee95's fix.
     this._typeId = typeId;
     this.refresh();
 };
