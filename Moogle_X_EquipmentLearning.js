@@ -12,7 +12,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.22 Allows actors to learn skill from equipment.
+ * @plugindesc v1.23 Allows actors to learn skill from equipment.
  * @author Moogle_X
  *
  * @param Allows Instant Mastery
@@ -366,6 +366,17 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * configurations.
  *
  * ============================================================================
+ * Miscellaneous - Custom Skill Icon
+ * ============================================================================
+ * If you wish some skill to display a different icon when displayed in Item,
+ * Equip, or Shop menu scene, you can add <EQL Custom Icon: x> notetag into the
+ * skill's notebox.
+ *
+ * Example:
+ * <EQL Custom Icon: 20>          // This skill will use icon 20 in the Item,
+ *                                // Equip, or Shop menu scene.
+ *
+ * ============================================================================
  * Notetags and Plugin Commands List
  * ============================================================================
  * Actors Notetag:
@@ -385,6 +396,7 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * <EQL Show Switch: x>
  * <EQL AP Gain Eval>
  * </EQL AP Gain Eval>
+ * <EQL Custom Icon: x>
  *
  * Enemies Notetag:
  * <EQL AP: x>
@@ -423,6 +435,9 @@ Moogle_X.EQL = Moogle_X.EQL || {};
  * ============================================================================
  * Change Log
  * ============================================================================
+ * Version 1.23:
+ * - Added Custom Skill Icon feature.
+ *
  * Version 1.22:
  * - Added window compatibility fix with YEP_EquipCore v1.09.
  * - Added "New Skill Offset Y" parameter.
@@ -848,6 +863,7 @@ DataManager.readNotetags_EQL3 = function(group) {
     var note3 = /<(?:EQL SHOW SWITCH):[ ](\d+)>/i;
     var note4a = /<(?:EQL AP GAIN EVAL)>/i;
     var note4b = /<\/(?:EQL AP GAIN EVAL)>/i;
+    var note5 = /<(?:EQL CUSTOM ICON):[ ](\d+)>/i;
 
 	  for (var n = 1; n < group.length; n++) {
 		    var obj = group[n];
@@ -857,6 +873,7 @@ DataManager.readNotetags_EQL3 = function(group) {
         obj.eqlNoAft = false;
         obj.eqlShowSwitch = 0;
         obj.eqlApGainEval = '';
+        obj.eqlCstIcon = false;
         var evalMode = 'none';
 
 		    for (var i = 0; i < notedata.length; i++) {
@@ -864,6 +881,8 @@ DataManager.readNotetags_EQL3 = function(group) {
 			      if (line.match(note1)) {
                 var apNeeded  = Number(RegExp.$1);
                 obj.eqlAp = apNeeded;
+            } else if (line.match(note5)) {
+                obj.eqlCstIcon = Number(RegExp.$1);
             } else if (line.match(note2)) {
                 obj.eqlNoAft = true;
             } else if (line.match(note3)) {
@@ -1929,7 +1948,13 @@ Window_ShopStatus.prototype.eqlDrawAbilityList = function(item, x, y, w) {
         var dy = y + this.lineHeight() * i;
         var ability = $dataSkills[skillList[i]];
         if (ability) {
-            if (Moogle_X.EQL.showSkillIcon) this.drawIcon(ability.iconIndex, x, dy + 2);
+            if (Moogle_X.EQL.showSkillIcon) {
+                if (ability.eqlCstIcon) {
+                    this.drawIcon(ability.eqlCstIcon, x, dy + 2);
+                } else {
+                    this.drawIcon(ability.iconIndex, x, dy + 2);
+                }
+            }
             this.resetFontSettings();
             this.eqlDrawApGauge(ability, x, dy, w);
             this.contents.fontFace = Moogle_X.EQL.sklFontName;
@@ -2156,7 +2181,12 @@ Window_EqlAbilityList.prototype.eqlDrawIcon = function(ability, x, y) {
         }
     }
 
-    this.drawIcon(ability.iconIndex, x, y);
+    // Display custom skill icon.
+    if (ability.eqlCstIcon) {
+        this.drawIcon(ability.eqlCstIcon, x, y);
+    } else {
+        this.drawIcon(ability.iconIndex, x, y);
+    }
 };
 
 Window_EqlAbilityList.prototype.eqlDrawAbilityName = function(ability, x, y, w, align) {
